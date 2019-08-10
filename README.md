@@ -102,7 +102,6 @@ you do not need to repeat colored { ... } block in each method but just use colo
 
 ```kotlin
 class Weather(val degrees: Int) : ColoredConsole {
-    
     fun display() = println("Degrees:".blue.bold + " $degrees".italic.bold)
 }
 
