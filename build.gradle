@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'mm'
-version '1.0-SNAPSHOT'
+version '0.1'
 
 repositories {
     mavenCentral()
@@ -12,3 +12,4 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
 }
+                                     

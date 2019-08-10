@@ -1,6 +1,10 @@
 # Colored Console
 Kotlin DSL ANSI Ouput Colored Console
 
+#### How to use it
+
+Just copy one file com/github/mm/coloredconsole/ColoredConsole.kt file into your project and use it.
+
 #### Simple Examples
 
 
