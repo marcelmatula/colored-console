@@ -19,7 +19,7 @@ colored {
 
 ```kotlin
 colored {
-    // use Cyan as backgroud color
+    // use Cyan as background color
     println("Hello World".cyan.bg)  
 }
 ```
