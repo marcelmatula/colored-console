@@ -7,8 +7,10 @@ Kotlin DSL ANSI Colored Console Ouput Library
 colored {
     println("Hello world".cyan.bold) 
 
-    println("Hello world".cyan.bg)  // use Cyan as backgroud color
+    // use Cyan as backgroud color
+    println("Hello world".cyan.bg)  
 
+    // coloring/styling can by called on any object not just String
     val pi = 22f/7
     println(pi.blue.italic.underline)
 }
@@ -38,11 +40,11 @@ colored {
 colored {
     val chapter = cyan + underline + bold 
     val chapterNumber = 12
-    println("${chapterNumber}. Good Bye world"(chapter") { chapterNumber >= 10 })
+    println("${chapterNumber}. Good Bye world"(chapter) { chapterNumber >= 10 })
     
     // or
     
-    println("${chapterNumber}. Good Bye world".style(chapter") { chapterNumber >= 10 })
+    println("${chapterNumber}. Good Bye world".style(chapter) { chapterNumber >= 10 })
 }
 ```
 
