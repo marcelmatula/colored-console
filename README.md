@@ -3,14 +3,16 @@ Kotlin DSL ANSI Ouput Colored Console
 
 #### Simple Examples
 
-<img src=".images/simple-1.png">
+<img src=".images/simple-1.png"/>
+
 ```kotlin
 colored {
     println("Hello world".cyan.bold) 
 }
 ```
 
-<img src=".images/simple-2.png">
+<img src=".images/simple-2.png"/>
+
 ```kotlin
 colored {
     // use Cyan as backgroud color
@@ -18,7 +20,8 @@ colored {
 }
 ```
 
-<img src=".images/simple-3.png">
+<img src=".images/simple-3.png"/>
+
 ```kotlin
 colored {
     // coloring/styling can by called on any object not just String
