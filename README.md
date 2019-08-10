@@ -5,6 +5,14 @@ Kotlin DSL ANSI Ouput Colored Console
 
 Just copy only one file com/github/mm/coloredconsole/ColoredConsole.kt into your project and use it.
 
+* styles - **bold**, *italic*, strike, underline, hidden, faint, reverse, blink
+
+* color - black, white, read, blue, green, yellow, cyan, purple
+
+* background colors support
+
+* works with normal OS - Linux, Mac OS (not Windows) 
+
 #### Simple Examples
 
 
