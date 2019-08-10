@@ -34,7 +34,6 @@ colored {
 <img src=".images/simple-3.png"/>
 
 
-
 #### Custom Styles
 ```kotlin
 colored {
@@ -67,12 +66,46 @@ colored {
 colored {
     val chapter = cyan + underline + bold 
     val chapterNumber = 12
-    println("${chapterNumber}. Good Bye world"(chapter) { chapterNumber >= 10 })
+    println("${chapterNumber}. Goodbye World"(chapter) { chapterNumber >= 10 })
     
     // or
     
-    println("${chapterNumber}. Good Bye world".style(chapter) { chapterNumber >= 10 })
+    println("${chapterNumber}. Goodbye World".style(chapter) { chapterNumber >= 10 })
 }
 ```
 <img src=".images/condition-2.png"/>
 
+
+#### Disable coloring
+
+```kotlin
+colored(enabled = true) {
+    println("Orange".yellow.bold + " Is the New " + "Black".bold.reverse)
+}
+```
+
+<img src=".images/disable-1.png"/>
+
+
+```kotlin
+colored(enabled = false) {
+    println("Orange".yellow.bold + " Is the New " + "Black".bold.reverse)
+}
+``` 
+
+<img src=".images/disable-2.png"/>
+
+#### Coloring for all class methods 
+
+Your class can implement ColoredConsole and in that case 
+you do not need to repeat colored { ... } block in each method but just use color/style directly. 
+
+```kotlin
+class Weather(val degrees: Int) : ColoredConsole {
+    
+    fun display() = println("Degrees:".blue.bold + " $degrees".italic.bold)
+}
+
+```
+
+<img src=".images/class-1.png"/>
