@@ -3,24 +3,25 @@ Kotlin DSL ANSI Ouput Colored Console
 
 #### Simple Examples
 
-<img src=".images/simple-1.png"/>
 
 ```kotlin
 colored {
-    println("Hello world".cyan.bold) 
+    println("Hello World".cyan.bold) 
+}
+```
+
+<img src=".images/simple-1.png"/>
+
+
+```kotlin
+colored {
+    // use Cyan as backgroud color
+    println("Hello World".cyan.bg)  
 }
 ```
 
 <img src=".images/simple-2.png"/>
 
-```kotlin
-colored {
-    // use Cyan as backgroud color
-    println("Hello world".cyan.bg)  
-}
-```
-
-<img src=".images/simple-3.png"/>
 
 ```kotlin
 colored {
@@ -30,27 +31,38 @@ colored {
 }
 ```
 
+<img src=".images/simple-3.png"/>
+
+
 
 #### Custom Styles
 ```kotlin
 colored {
     // custom style: characters + or . can be used to group styles
     val header = green + underline + bold 
-    println("Hello world"(header))
+    println("Hello World"(header))
     
     // or
     
-    println("Hello world".style(header))
+    println("Hello World".style(header))
 }
 ```
+
+<img src=".images/custom-1.png"/>
+
+
 
 #### Conditional coloring
 ```kotlin
 // prints all even numbers in Cyan color
 colored {
-    println(listOf(1,2,3,4,5).map { it.cyan { it.rem(2) == 0 } }.joinToString())
+    println(listOf(1, 2, 3, 4, 5).joinToString { it.cyan { it.rem(2) == 0 } })
 }
+```
 
+<img src=".images/condition-1.png"/>
+
+```kotlin
 // condition on style
 colored {
     val chapter = cyan + underline + bold 
@@ -62,4 +74,5 @@ colored {
     println("${chapterNumber}. Good Bye world".style(chapter) { chapterNumber >= 10 })
 }
 ```
+<img src=".images/condition-2.png"/>
 
