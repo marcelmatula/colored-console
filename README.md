@@ -7,6 +7,8 @@ Kotlin DSL ANSI Colored Console Ouput Library
 colored {
     println("Hello world".cyan.bold) 
 
+<img src=".images/simple-1.png">
+
     // use Cyan as backgroud color
     println("Hello world".cyan.bg)  
 
