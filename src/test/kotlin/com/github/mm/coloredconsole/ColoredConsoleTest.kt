@@ -37,11 +37,11 @@ fun main() {
     colored {
         val chapter = cyan + underline + bold
         val chapterNumber = 12
-        println("${chapterNumber}. Goodbye World"(chapter) { chapterNumber >= 10 })
+        println("$chapterNumber. Goodbye World"(chapter) { chapterNumber >= 10 })
 
         // or
 
-        println("${chapterNumber}. Goodbye World".style(chapter) { chapterNumber >= 10 })
+        println("$chapterNumber. Goodbye World".style(chapter) { chapterNumber >= 10 })
     }
 
     colored(enabled = true) {
@@ -57,5 +57,10 @@ fun main() {
     }
 
     Weather(22).display()
+
+    // nested
+    colored(enabled = true) {
+        println(("bold " + ("italic " + ("color " + "Yellow".yellow.bold + " normal").faint + " italic").italic + " bold").bold)
+    }
 
 }

@@ -78,14 +78,25 @@ colored {
 colored {
     val chapter = cyan + underline + bold 
     val chapterNumber = 12
-    println("${chapterNumber}. Goodbye World"(chapter) { chapterNumber >= 10 })
+    println("$chapterNumber. Goodbye World"(chapter) { chapterNumber >= 10 })
     
     // or
     
-    println("${chapterNumber}. Goodbye World".style(chapter) { chapterNumber >= 10 })
+    println("$chapterNumber. Goodbye World".style(chapter) { chapterNumber >= 10 })
 }
 ```
 <img src=".images/condition-2.png"/>
+
+
+#### Nested coloring
+
+```kotlin
+colored {
+    println(("bold " + ("italic " + ("color " + "Yellow".yellow.bold + " normal").faint + " italic").italic + " bold").bold)
+}
+```
+
+<img src=".images/nested-1.png"/>
 
 
 #### Disable coloring
