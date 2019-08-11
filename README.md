@@ -1,5 +1,5 @@
 # Colored Console
-Kotlin DSL ANSI Ouput Colored Console
+Kotlin DSL ANSI Output Colored Console
 
 #### How to use it
 
