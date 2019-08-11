@@ -1,5 +1,10 @@
 package com.github.mm.coloredconsole
 
+import com.github.mm.coloredconsole.ColoredConsole.Companion.BLACK
+import com.github.mm.coloredconsole.ColoredConsole.Companion.BRIGHT_BLACK
+import com.github.mm.coloredconsole.ColoredConsole.Companion.BRIGHT_WHITE
+import com.github.mm.coloredconsole.ColoredConsole.Companion.RESET
+import com.github.mm.coloredconsole.ColoredConsole.Companion.WHITE
 import com.github.mm.coloredconsole.ColoredConsole.Style
 import com.github.mm.coloredconsole.ColoredConsole.Style.NotApplied
 import java.util.regex.Pattern
@@ -9,10 +14,11 @@ interface ColoredConsole {
     sealed class Style {
 
         val bg: Style get() = when (this){
-            is NotApplied -> this
-            is Background -> this
-            is Simple -> if (code.isColor) copy(code = code + 10) else this
-            is Composite ->  if (parent is Simple && parent.code.isColor) copy(parent = parent.copy(code = parent.code + 10)) else this
+            is Simple -> if (code.isColor) copy(code = code + BACKGROUND_SHIFT) else this
+            is Composite -> if (parent is Simple && parent.code.isColor)
+                                copy(parent = parent.copy(code = parent.code + BACKGROUND_SHIFT))
+                            else this
+            else -> this
         }
 
         abstract fun wrap(text: String): String
@@ -43,11 +49,11 @@ interface ColoredConsole {
                 else -> Composite(style, this)
             }
             is Simple -> when (style) {
-                is Background -> if (code.isColor) copy(code = code + 10) else this
+                is Background -> if (code.isColor) copy(code = code + BACKGROUND_SHIFT) else this
                 else -> Composite(style, this)
             }
             is Composite -> when (style) {
-                is Background -> if (parent is Simple && parent.code.isColor) copy(parent = parent.copy(code = parent.code + 10)) else this
+                is Background -> if (parent is Simple && parent.code.isColor) copy(parent = parent.copy(code = parent.code + BACKGROUND_SHIFT)) else this
                 else -> Composite(style, this)
             }
         }
@@ -69,13 +75,11 @@ interface ColoredConsole {
 
     val String.bg
         get() = pattern.matcher(this).let { matcher ->
-            if (matcher.find() && matcher.start() == 0) {
-                val code = matcher.group(1).toIntOrNull() ?: 0
-                if (code.isColor) {
-                    return@let substring(0, 2) + (code + 10) + substring(4)
-                }
-            }
-            this
+            if (!matcher.find() || matcher.start() != 0) return@let this
+            val code = matcher.group(1).toIntOrNull() ?: 0
+            if (code.isColor) {
+                return@let substring(0, 2) + (code + BACKGROUND_SHIFT) + substring(4)
+            } else this
         }
 
     //region style
@@ -259,12 +263,13 @@ interface ColoredConsole {
         const val BRIGHT_CYAN = 96
         const val BRIGHT_WHITE = 97
 
-        val pattern: Pattern = Pattern.compile("\\u001B\\[([0-9]{1,2})m")
+        const val BACKGROUND_SHIFT = 10
 
+        val pattern: Pattern = Pattern.compile("\\u001B\\[([0-9]{1,2})m")
     }
 }
 
-interface ColorConsoleDisabled : ColoredConsole {
+private interface ColorConsoleDisabled : ColoredConsole {
 
     override val bold get() = NotApplied
     override val <N : Style> N.bold: Style get() = NotApplied
@@ -314,9 +319,9 @@ interface ColorConsoleDisabled : ColoredConsole {
     override val <N : Style> N.brightWhite: Style get() = NotApplied
 }
 
-private val Int.isColor get() = this in 30..37 || this in 90..97
+private val Int.isColor get() = this in BLACK..WHITE || this in BRIGHT_BLACK..BRIGHT_WHITE
 
-private fun String.reset(vararg codes: Int) = "\u001B[${ColoredConsole.RESET}m".let { reset ->
+private fun String.reset(vararg codes: Int) = "\u001B[${RESET}m".let { reset ->
     val tags = codes.joinToString { "\u001B[${it}m" }
     split(reset).filter { it.isNotEmpty() }.joinToString(separator = "") { tags + it + reset }
 }
