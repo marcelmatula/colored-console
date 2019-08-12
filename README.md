@@ -37,7 +37,7 @@ colored {
 
 ```kotlin
 colored {
-    // coloring/styling can by called on any object not just String
+    // coloring/styling can be called on any object not just String
     val pi = 22f/7
     println(pi.blue.italic.underline)
 }
