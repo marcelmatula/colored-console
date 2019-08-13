@@ -36,7 +36,7 @@ interface ColoredConsole {
         }
 
         data class Simple(val code: Int) : Style() {
-            override fun wrap(text: String) = "\u001B[${code}m$text".reset(code)
+            override fun wrap(text: String) = text.applyCodes(code)
         }
 
         data class Composite(val parent: Style, private val child: Style) : Style() {
@@ -60,7 +60,7 @@ interface ColoredConsole {
             text
         else {
             val codes = ansiCodes.filter { it != RESET }
-            text.reset(*codes.toIntArray())
+            text.applyCodes(*codes.toIntArray())
         }
     }
 
@@ -251,7 +251,7 @@ private val Int.isNormalColor get() = this in BLACK..WHITE
 private val Int.isBrightColor get() = this in BRIGHT_BLACK..BRIGHT_WHITE
 private val Int.isColor get() = isNormalColor || isBrightColor
 
-private fun String.reset(vararg codes: Int) = "\u001B[${RESET}m".let { reset ->
+private fun String.applyCodes(vararg codes: Int) = "\u001B[${RESET}m".let { reset ->
     val tags = codes.joinToString { "\u001B[${it}m" }
     split(reset).filter { it.isNotEmpty() }.joinToString(separator = "") { tags + it + reset }
 }
