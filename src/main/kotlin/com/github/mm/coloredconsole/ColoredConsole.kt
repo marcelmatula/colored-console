@@ -35,13 +35,6 @@ interface ColoredConsole {
             override fun wrap(text: String) = text
         }
 
-        class Background(private val style: Style) : Style() {
-            override fun wrap(text: String) = when (style) {
-                is Simple -> (if (style.code.isColor) style.copy(code = style.code + 10) else style).wrap(text)
-                else -> style.wrap(text)
-            }
-        }
-
         data class Simple(val code: Int) : Style() {
             override fun wrap(text: String) = "\u001B[${code}m$text".reset(code)
         }
@@ -52,18 +45,8 @@ interface ColoredConsole {
 
         operator fun plus(style: Style) = when (this) {
             is NotApplied -> this
-            is Background -> when (style) {
-                is Background -> this
-                else -> Composite(style, this)
-            }
-            is Simple -> when (style) {
-                is Background -> if (code.isColor) copy(code = code + BACKGROUND_SHIFT) else this
-                else -> Composite(style, this)
-            }
-            is Composite -> when (style) {
-                is Background -> if (parent is Simple && parent.code.isColor) copy(parent = parent.copy(code = parent.code + BACKGROUND_SHIFT)) else this
-                else -> Composite(style, this)
-            }
+            is Simple -> Composite(style, this)
+            is Composite -> Composite(style, this)
         }
     }
 
@@ -262,7 +245,6 @@ private interface ColorConsoleDisabled : ColoredConsole {
     override val <N : Style> N.cyan: Style get() = NotApplied
     override val white get() = NotApplied
     override val <N : Style> N.white: Style get() = NotApplied
-
 }
 
 private val Int.isNormalColor get() = this in BLACK..WHITE
@@ -275,4 +257,4 @@ private fun String.reset(vararg codes: Int) = "\u001B[${RESET}m".let { reset ->
 }
 
 fun <R> colored(enabled: Boolean = true, block: ColoredConsole.() -> R): R =
-        if (enabled) object : ColoredConsole {}.block() else object : ColorConsoleDisabled {}.block()
+    if (enabled) object : ColoredConsole {}.block() else object : ColorConsoleDisabled {}.block()
