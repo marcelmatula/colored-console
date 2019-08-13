@@ -18,7 +18,7 @@ interface ColoredConsole {
             is Composite -> if (parent is Simple && parent.code.isColor)
                                 copy(parent = parent.copy(code = parent.code + BACKGROUND_SHIFT))
                             else this
-            else -> this
+            is NotApplied -> this
         }
 
         val bright: Style get() = when (this){
@@ -26,7 +26,7 @@ interface ColoredConsole {
             is Composite -> if (parent is Simple && parent.code.isNormalColor)
                                 copy(parent = parent.copy(code = parent.code + BRIGHT_SHIFT))
                             else this
-            else -> this
+            is NotApplied -> this
         }
 
         abstract fun wrap(text: String): String
