@@ -21,6 +21,14 @@ interface ColoredConsole {
             else -> this
         }
 
+        val bright: Style get() = when (this){
+            is Simple -> if (code.isNormalColor) copy(code = code + BRIGHT_SHIFT) else this
+            is Composite -> if (parent is Simple && parent.code.isNormalColor)
+                                copy(parent = parent.copy(code = parent.code + BRIGHT_SHIFT))
+                            else this
+            else -> this
+        }
+
         abstract fun wrap(text: String): String
 
         object NotApplied : Style() {
@@ -73,16 +81,19 @@ interface ColoredConsole {
         }
     }
 
-    val String.bg
-        get() = pattern.matcher(this).let { matcher ->
-            if (!matcher.find() || matcher.start() != 0) return@let this
-            val code = matcher.group(1).toIntOrNull() ?: 0
-            if (code.isColor) {
-                return@let substring(0, 2) + (code + BACKGROUND_SHIFT) + substring(4)
-            } else this
-        }
+    private val String.firstAnsi get() = pattern.matcher(this).let { matcher ->
+        if (!matcher.find() || matcher.start() != 0) null else matcher.group(1).toIntOrNull()
+    }
 
-    //region style
+    val String.bright get() = firstAnsi.let { code ->
+        if (code?.isNormalColor == true) substring(0, 2) + (code + BRIGHT_SHIFT) + substring(4) else this
+    }
+
+    val String.bg get() = firstAnsi.let { code ->
+        if (code?.isColor == true) substring(0, 2) + (code + BACKGROUND_SHIFT) + substring(4) else this
+    }
+
+    //region styles
     val bold: Style get() = Style.Simple(HIGH_INTENSITY)
     val <N : Style> N.bold: Style get() = this + this@ColoredConsole.bold
     val <N> N.bold get() = wrap(HIGH_INTENSITY)
@@ -130,7 +141,7 @@ interface ColoredConsole {
     val <N> N.strike get() = wrap(STRIKE)
     fun <N> N.strike(predicate: (N) -> Boolean = { true }) = takeIf { predicate(this) }?.toString()?.strike?: this.toString()
     fun strike(text: String) = text.wrap(STRIKE)
-    //endregions
+    //endregionss
 
     // region colors
     val black: Style get() = Style.Simple(BLACK)
@@ -182,61 +193,14 @@ interface ColoredConsole {
     fun white(text: String) = text.wrap(WHITE)
     // endregion
 
-    // region bright colors
-    val brightBlack: Style get() = Style.Simple(BRIGHT_BLACK)
-    val <N : Style> N.brightBlack: Style get() = this + this@ColoredConsole.brightBlack
-    val <N> N.brightBlack get() = wrap(BRIGHT_BLACK)
-    fun <N> N.brightBlack(predicate: (N) -> Boolean = { true }) = takeIf { predicate(this) }?.toString()?.brightBlack?: this.toString()
-    fun brightBlack(text: String) = text.wrap(BRIGHT_BLACK)
-
-    val brightRed: Style get() = Style.Simple(BRIGHT_RED)
-    val <N : Style> N.brightRed: Style get() = this + this@ColoredConsole.brightRed
-    val <N> N.brightRed get() = wrap(BRIGHT_RED)
-    fun <N> N.brightRed(predicate: (N) -> Boolean = { true }) = takeIf { predicate(this) }?.toString()?.brightRed?: this.toString()
-    fun brightRed(text: String) = text.wrap(BRIGHT_RED)
-
-    val brightGreen: Style get() = Style.Simple(BRIGHT_GREEN)
-    val <N : Style> N.brightGreen: Style get() = this + this@ColoredConsole.brightGreen
-    val <N> N.brightGreen get() = wrap(BRIGHT_GREEN)
-    fun <N> N.brightGreen(predicate: (N) -> Boolean = { true }) = takeIf { predicate(this) }?.toString()?.brightGreen?: this.toString()
-    fun brightGreen(text: String) = text.wrap(BRIGHT_GREEN)
-
-    val brightYellow: Style get() = Style.Simple(BRIGHT_YELLOW)
-    val <N : Style> N.brightYellow: Style get() = this + this@ColoredConsole.brightYellow
-    val <N> N.brightYellow get() = wrap(BRIGHT_YELLOW)
-    fun <N> N.brightYellow(predicate: (N) -> Boolean = { true }) = takeIf { predicate(this) }?.toString()?.brightYellow?: this.toString()
-    fun brightYellow(text: String) = text.wrap(BRIGHT_YELLOW)
-
-    val brightBlue: Style get() = Style.Simple(BRIGHT_BLUE)
-    val <N : Style> N.brightBlue: Style get() = this + this@ColoredConsole.brightBlue
-    val <N> N.brightBlue get() = wrap(BRIGHT_BLUE)
-    fun <N> N.brightBlue(predicate: (N) -> Boolean = { true }) = takeIf { predicate(this) }?.toString()?.brightBlue?: this.toString()
-    fun brightBlue(text: String) = text.wrap(BRIGHT_BLUE)
-
-    val brightPurple: Style get() = Style.Simple(BRIGHT_PURPLE)
-    val <N : Style> N.brightPurple: Style get() = this + this@ColoredConsole.brightPurple
-    val <N> N.brightPurple get() = wrap(BRIGHT_PURPLE)
-    fun <N> N.brightPurple(predicate: (N) -> Boolean = { true }) = takeIf { predicate(this) }?.toString()?.brightPurple?: this.toString()
-    fun brightPurple(text: String) = text.wrap(BRIGHT_PURPLE)
-
-    val brightCyan: Style get() = Style.Simple(BRIGHT_CYAN)
-    val <N : Style> N.brightCyan: Style get() = this + this@ColoredConsole.brightCyan
-    val <N> N.brightCyan get() = wrap(BRIGHT_CYAN)
-    fun <N> N.brightCyan(predicate: (N) -> Boolean = { true }) = takeIf { predicate(this) }?.toString()?.brightCyan?: this.toString()
-    fun brightCyan(text: String) = text.wrap(BRIGHT_CYAN)
-
-    val brightWhite: Style get() = Style.Simple(BRIGHT_WHITE)
-    val <N : Style> N.brightWhite: Style get() = this + this@ColoredConsole.brightWhite
-    val <N> N.brightWhite get() = wrap(BRIGHT_WHITE)
-    fun <N> N.brightWhite(predicate: (N) -> Boolean = { true }) = takeIf { predicate(this) }?.toString()?.brightWhite?: this.toString()
-    fun brightWhite(text: String) = text.wrap(BRIGHT_WHITE)
-    // endregion
-
     companion object {
         const val RESET = 0
 
         const val HIGH_INTENSITY = 1
         const val LOW_INTENSITY = 2
+
+        const val BACKGROUND_SHIFT = 10
+        const val BRIGHT_SHIFT = 60
 
         const val ITALIC = 3
         const val UNDERLINE = 4
@@ -254,16 +218,14 @@ interface ColoredConsole {
         const val CYAN = 36
         const val WHITE = 37
 
-        const val BRIGHT_BLACK = 90
-        const val BRIGHT_RED = 91
-        const val BRIGHT_GREEN = 92
-        const val BRIGHT_YELLOW = 93
-        const val BRIGHT_BLUE = 94
-        const val BRIGHT_PURPLE = 95
-        const val BRIGHT_CYAN = 96
-        const val BRIGHT_WHITE = 97
-
-        const val BACKGROUND_SHIFT = 10
+        const val BRIGHT_BLACK = BLACK + BRIGHT_SHIFT
+        const val BRIGHT_RED = RED + BRIGHT_SHIFT
+        const val BRIGHT_GREEN = GREEN + BRIGHT_SHIFT
+        const val BRIGHT_YELLOW = YELLOW + BRIGHT_SHIFT
+        const val BRIGHT_BLUE = BLUE + BRIGHT_SHIFT
+        const val BRIGHT_PURPLE = PURPLE + BRIGHT_SHIFT
+        const val BRIGHT_CYAN = CYAN + BRIGHT_SHIFT
+        const val BRIGHT_WHITE = WHITE + BRIGHT_SHIFT
 
         val pattern: Pattern = Pattern.compile("\\u001B\\[([0-9]{1,2})m")
     }
@@ -301,25 +263,11 @@ private interface ColorConsoleDisabled : ColoredConsole {
     override val white get() = NotApplied
     override val <N : Style> N.white: Style get() = NotApplied
 
-    override val brightBlack get() = NotApplied
-    override val <N : Style> N.brightBlack: Style get() = NotApplied
-    override val brightRed get() = NotApplied
-    override val <N : Style> N.brightRed: Style get() = NotApplied
-    override val brightGreen get() = NotApplied
-    override val <N : Style> N.brightGreen: Style get() = NotApplied
-    override val brightYellow get() = NotApplied
-    override val <N : Style> N.brightYellow: Style get() = NotApplied
-    override val brightBlue get() = NotApplied
-    override val <N : Style> N.brightBlue: Style get() = NotApplied
-    override val brightPurple get() = NotApplied
-    override val <N : Style> N.brightPurple: Style get() = NotApplied
-    override val brightCyan get() = NotApplied
-    override val <N : Style> N.brightCyan: Style get() = NotApplied
-    override val brightWhite get() = NotApplied
-    override val <N : Style> N.brightWhite: Style get() = NotApplied
 }
 
-private val Int.isColor get() = this in BLACK..WHITE || this in BRIGHT_BLACK..BRIGHT_WHITE
+private val Int.isNormalColor get() = this in BLACK..WHITE
+private val Int.isBrightColor get() = this in BRIGHT_BLACK..BRIGHT_WHITE
+private val Int.isColor get() = isNormalColor || isBrightColor
 
 private fun String.reset(vararg codes: Int) = "\u001B[${RESET}m".let { reset ->
     val tags = codes.joinToString { "\u001B[${it}m" }

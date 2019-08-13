@@ -28,6 +28,16 @@ fun main() {
         println("Hello World".style(header))
     }
 
+    colored {
+        // custom style: characters + or . can be used to group styles
+        val header = green.bright + underline + bold
+        println("Hello World"(header))
+
+        // or
+
+        println("Hello World".style(header))
+    }
+
     // prints all even numbers in Cyan color
     colored {
         println(listOf(1, 2, 3, 4, 5).joinToString { it.cyan { it.rem(2) == 0 } })
@@ -59,8 +69,23 @@ fun main() {
     Weather(22).display()
 
     // nested
-    colored(enabled = true) {
+    colored {
         println(("bold " + ("italic " + ("color " + "Yellow".yellow.bold + " normal").faint + " italic").italic + " bold").bold)
+    }
+
+    // bright color
+    colored {
+        val style = blue.bright + bold
+        println("bright blue"(style))
+
+        // or
+
+        println("bright blue".blue.bright.bold)
+    }
+
+    // background
+    colored {
+        println("cyan background".cyan.bg)
     }
 
 }

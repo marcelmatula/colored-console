@@ -7,9 +7,11 @@ Just copy only one file com/github/mm/coloredconsole/ColoredConsole.kt into your
 
 * styles - **bold**, *italic*, strike, underline, hidden, faint, reverse, blink
 
-* color - black, white, read, blue, green, yellow, cyan, purple
+* colors - black, white, red, blue, green, yellow, cyan, purple
 
 * background colors support
+
+* bright colors support
 
 * works with normal OS - Linux, Mac OS (not Windows) 
 
@@ -128,6 +130,28 @@ class Weather(val degrees: Int) : ColoredConsole {
     fun display() = println("Degrees:".blue.bold + " $degrees".italic.bold)
 }
 
-```
+```       
 
 <img src=".images/class-1.png"/>
+
+#### Bright Coloring 
+
+```kotlin
+colored {
+    val style = blue.bright + bold
+    println("bright blue"(style))
+    
+    // or 
+
+    println("bright blue".blue.bright.bold)
+}
+```
+
+#### Background Coloring 
+
+```kotlin
+colored {
+    println("cyan background".cyan.bg)
+}
+```
+
