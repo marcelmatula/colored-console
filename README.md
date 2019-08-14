@@ -175,7 +175,7 @@ println { "bright blue".style(style1) }
 
 // or 
 
-println("bright blue".blue.bright.bold)
+println { "bright blue".blue.bright.bold }
 ```
 
 ```kotlin
