@@ -19,6 +19,10 @@ Just copy only one file com/github/mm/coloredconsole/ColoredConsole.kt into your
 
 
 ```kotlin
+println { "Hello World".cyan.bold }
+
+// or 
+
 colored {
     println("Hello World".cyan.bold) 
 }
@@ -28,6 +32,10 @@ colored {
 
 
 ```kotlin
+println { "Hello World".cyan.bg }  
+
+// or
+
 colored {
     // use Cyan as background color
     println("Hello World".cyan.bg)  
@@ -38,9 +46,13 @@ colored {
 
 
 ```kotlin
+// coloring/styling can be called on any object not just String
+val pi = 22f/7
+println { pi.blue.italic.underline }
+
+// or
+
 colored {
-    // coloring/styling can be called on any object not just String
-    val pi = 22f/7
     println(pi.blue.italic.underline)
 }
 ```
@@ -49,6 +61,17 @@ colored {
 
 
 #### Custom Styles
+
+```kotlin
+// custom style: characters + or . can be used to group styles
+val header = style { green + underline + bold }
+println { "Hello World"(header) }
+
+// or
+
+println { "Hello World".style(header) }
+```
+
 ```kotlin
 colored {
     // custom style: characters + or . can be used to group styles
@@ -66,6 +89,12 @@ colored {
 
 
 #### Conditional coloring
+
+```kotlin
+// prints all even numbers in Cyan color
+println { listOf(1, 2, 3, 4, 5).joinToString { it.cyan { it.rem(2) == 0 } } }
+```
+
 ```kotlin
 // prints all even numbers in Cyan color
 colored {
@@ -91,6 +120,10 @@ colored {
 
 
 #### Nested coloring
+
+```kotlin
+println { ("bold " + ("italic " + ("color " + "Yellow".yellow.bold + " normal").faint + " italic").italic + " bold").bold }
+```
 
 ```kotlin
 colored {
@@ -137,9 +170,18 @@ class Weather(val degrees: Int) : ColoredConsole {
 #### Bright Coloring 
 
 ```kotlin
+val style1 = style { blue.bright + bold }
+println { "bright blue".style(style1) }
+
+// or 
+
+println("bright blue".blue.bright.bold)
+```
+
+```kotlin
 colored {
-    val style = blue.bright + bold
-    println("bright blue"(style))
+    val style1 = blue.bright + bold
+    println("bright blue".style(style1))
     
     // or 
 
@@ -148,6 +190,10 @@ colored {
 ```
 
 #### Background Coloring 
+
+```kotlin
+println { "cyan background".cyan.bg }
+```
 
 ```kotlin
 colored {

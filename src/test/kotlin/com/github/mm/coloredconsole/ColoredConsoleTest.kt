@@ -3,14 +3,21 @@ package com.github.mm.coloredconsole
 
 fun main() {
 
+    println { "Hello World".cyan.bold }
+
     colored {
         println("Hello World".cyan.bold)
     }
+
+    println { "Hello World".cyan.bg }
 
     colored {
         // use Cyan as backgroud color
         println("Hello World".cyan.bg)
     }
+
+    val pi = 22f/7
+    println { pi.blue.italic.underline }
 
     colored {
         // coloring/styling can by called on any object not just String
@@ -18,14 +25,19 @@ fun main() {
         println(pi.blue.italic.underline)
     }
 
+    val header1 = style { green + underline + bold }
+    println { "Hello World"(header1) }
+    // or
+    println { "Hello World".style(header1) }
+
     colored {
         // custom style: characters + or . can be used to group styles
-        val header = green + underline + bold
-        println("Hello World"(header))
+        val header2 = green + underline + bold
+        println("Hello World"(header2))
 
         // or
 
-        println("Hello World".style(header))
+        println("Hello World".style(header2))
     }
 
     colored {
@@ -39,6 +51,8 @@ fun main() {
     }
 
     // prints all even numbers in Cyan color
+    println { listOf(1, 2, 3, 4, 5).joinToString { it.cyan { it.rem(2) == 0 } }}
+
     colored {
         println(listOf(1, 2, 3, 4, 5).joinToString { it.cyan { it.rem(2) == 0 } })
     }
@@ -87,5 +101,8 @@ fun main() {
     colored {
         println("cyan background".cyan.bg)
     }
+
+    val header = style { blue + bold + underline }
+    println { "Chapter 7."(header) }
 
 }

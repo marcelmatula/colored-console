@@ -258,3 +258,8 @@ private fun String.applyCodes(vararg codes: Int) = "\u001B[${RESET}m".let { rese
 
 fun <R> colored(enabled: Boolean = true, block: ColoredConsole.() -> R): R =
     if (enabled) object : ColoredConsole {}.block() else object : ColorConsoleDisabled {}.block()
+
+fun <R : Style> style(block: ColoredConsole.() -> R): R = object : ColoredConsole {}.block()
+
+fun print(block: ColoredConsole.() -> String) = colored { print(block()) }
+fun println(block: ColoredConsole.() -> String) = colored { println(block()) }
