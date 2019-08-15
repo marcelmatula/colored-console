@@ -68,9 +68,13 @@ fun main() {
         println("$chapterNumber. Goodbye World".style(chapter) { chapterNumber >= 10 })
     }
 
+    println(colored = true) { "Orange".yellow.bold + " Is the New " + "Black".bold.reverse }
+
     colored(enabled = true) {
         println("Orange".yellow.bold + " Is the New " + "Black".bold.reverse)
     }
+
+    println(colored = false) { "Orange".yellow.bold + " Is the New " + "Black".bold.reverse }
 
     colored(enabled = false) {
         println("Orange".yellow.bold + " Is the New " + "Black".bold.reverse)

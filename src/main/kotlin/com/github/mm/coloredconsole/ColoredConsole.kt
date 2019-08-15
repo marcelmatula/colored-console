@@ -261,5 +261,5 @@ fun <R> colored(enabled: Boolean = true, block: ColoredConsole.() -> R): R =
 
 fun <R : Style> style(block: ColoredConsole.() -> R): R = object : ColoredConsole {}.block()
 
-fun print(block: ColoredConsole.() -> String) = colored { print(block()) }
-fun println(block: ColoredConsole.() -> String) = colored { println(block()) }
+fun print(colored: Boolean = true, block: ColoredConsole.() -> String) = colored(colored) { print(block()) }
+fun println(colored: Boolean = true, block: ColoredConsole.() -> String) = colored(colored) { println(block()) }

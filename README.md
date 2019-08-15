@@ -134,7 +134,13 @@ colored {
 <img src=".images/nested-1.png"/>
 
 
-#### Disable coloring
+#### Enabling/Disable coloring
+
+```kotlin
+println(colored = true) { "Orange".yellow.bold + " Is the New " + "Black".bold.reverse }
+```
+
+or
 
 ```kotlin
 colored(enabled = true) {
@@ -144,6 +150,12 @@ colored(enabled = true) {
 
 <img src=".images/disable-1.png"/>
 
+
+```kotlin
+println(colored = true) { "Orange".yellow.bold + " Is the New " + "Black".bold.reverse }
+``` 
+
+or
 
 ```kotlin
 colored(enabled = false) {
