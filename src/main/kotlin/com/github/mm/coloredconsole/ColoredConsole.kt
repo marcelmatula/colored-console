@@ -76,7 +76,7 @@ interface ColoredConsole {
         if (code?.isColor == true) substring(0, 2) + (code + BACKGROUND_SHIFT) + substring(4) else this
     }
 
-    //region styles
+    // region styles
     val bold: Style get() = Style.Simple(HIGH_INTENSITY)
     val <N : Style> N.bold: Style get() = this + this@ColoredConsole.bold
     val <N> N.bold get() = wrap(HIGH_INTENSITY)
@@ -124,7 +124,7 @@ interface ColoredConsole {
     val <N> N.strike get() = wrap(STRIKE)
     fun <N> N.strike(predicate: (N) -> Boolean = { true }) = takeIf { predicate(this) }?.toString()?.strike?: this.toString()
     fun strike(text: String) = text.wrap(STRIKE)
-    //endregionss
+    // endregion
 
     // region colors
     val black: Style get() = Style.Simple(BLACK)
