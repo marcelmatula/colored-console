@@ -21,8 +21,8 @@ fun main() {
 
     colored {
         // coloring/styling can by called on any object not just String
-        val pi = 22f/7
-        println(pi.blue.italic.underline)
+        val pi2 = 22f/7
+        println(pi2.blue.italic.underline)
     }
 
     val header1 = style { green + underline + bold }

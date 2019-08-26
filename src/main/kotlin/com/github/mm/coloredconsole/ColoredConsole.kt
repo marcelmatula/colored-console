@@ -256,8 +256,14 @@ private fun String.applyCodes(vararg codes: Int) = "\u001B[${RESET}m".let { rese
     split(reset).filter { it.isNotEmpty() }.joinToString(separator = "") { tags + it + reset }
 }
 
-fun <R> colored(enabled: Boolean = true, block: ColoredConsole.() -> R): R =
-    if (enabled) object : ColoredConsole {}.block() else object : ColorConsoleDisabled {}.block()
+//@UseExperimental(ExperimentalContracts::class)
+fun <R> colored(enabled: Boolean = true, block: ColoredConsole.() -> R): R {
+//    contract {
+//        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+//    }
+    check(true)
+    return if (enabled) object : ColoredConsole {}.block() else object : ColorConsoleDisabled {}.block()
+}
 
 fun <R : Style> style(block: ColoredConsole.() -> R): R = object : ColoredConsole {}.block()
 
