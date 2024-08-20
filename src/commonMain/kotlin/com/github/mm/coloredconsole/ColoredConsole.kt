@@ -7,12 +7,12 @@ import com.github.mm.coloredconsole.ColoredConsole.Companion.RESET
 import com.github.mm.coloredconsole.ColoredConsole.Companion.WHITE
 import com.github.mm.coloredconsole.ColoredConsole.Style
 import com.github.mm.coloredconsole.ColoredConsole.Style.NotApplied
-import java.util.regex.Pattern
 
 interface ColoredConsole {
 
     sealed class Style {
 
+        @Suppress("unused")
         val bg: Style get() = when (this){
             is Simple -> if (code.isColor) copy(code = code + BACKGROUND_SHIFT) else this
             is Composite -> if (parent is Simple && parent.code.isColor)
@@ -64,8 +64,8 @@ interface ColoredConsole {
         }
     }
 
-    private val String.firstAnsi get() = pattern.matcher(this).let { matcher ->
-        if (!matcher.find() || matcher.start() != 0) null else matcher.group(1).toIntOrNull()
+    private val String.firstAnsi get() = reEscape.find(this)?.let { matcher ->
+        if( matcher.range.start != 0) null else matcher.groups[1]?.value?.toIntOrNull()
     }
 
     val String.bright get() = firstAnsi.let { code ->
@@ -202,15 +202,28 @@ interface ColoredConsole {
         const val WHITE = 37
 
         const val BRIGHT_BLACK = BLACK + BRIGHT_SHIFT
+
+        @Suppress("unused")
         const val BRIGHT_RED = RED + BRIGHT_SHIFT
+
+        @Suppress("unused")
         const val BRIGHT_GREEN = GREEN + BRIGHT_SHIFT
+
+        @Suppress("unused")
         const val BRIGHT_YELLOW = YELLOW + BRIGHT_SHIFT
+
+        @Suppress("unused")
         const val BRIGHT_BLUE = BLUE + BRIGHT_SHIFT
+
+        @Suppress("unused")
         const val BRIGHT_PURPLE = PURPLE + BRIGHT_SHIFT
+
+        @Suppress("unused")
         const val BRIGHT_CYAN = CYAN + BRIGHT_SHIFT
+
         const val BRIGHT_WHITE = WHITE + BRIGHT_SHIFT
 
-        val pattern: Pattern = Pattern.compile("\\u001B\\[([0-9]{1,2})m")
+        val reEscape = Regex("\\u001B\\[([0-9]{1,2})m")
     }
 }
 
@@ -267,5 +280,7 @@ fun <R> colored(enabled: Boolean = true, block: ColoredConsole.() -> R): R {
 
 fun <R : Style> style(block: ColoredConsole.() -> R): R = object : ColoredConsole {}.block()
 
+@Suppress("unused")
 fun print(colored: Boolean = true, block: ColoredConsole.() -> String) = colored(colored) { print(block()) }
+
 fun println(colored: Boolean = true, block: ColoredConsole.() -> String) = colored(colored) { println(block()) }
