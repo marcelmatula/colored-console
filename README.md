@@ -1,5 +1,10 @@
 # Colored Console
 
+[![CI](https://github.com/marcelmatula/colored-console/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/marcelmatula/colored-console/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/marcelmatula/colored-console)](https://github.com/marcelmatula/colored-console/releases/latest)
+[![Kotlin](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmarcelmatula%2Fcolored-console%2Fmaster%2Fgradle%2Flibs.versions.toml&query=%24.versions.kotlin&label=Kotlin&logo=kotlin&color=7F52FF)](gradle/libs.versions.toml)
+[![License: MIT](https://img.shields.io/github/license/marcelmatula/colored-console)](LICENSE)
+
 A small Kotlin DSL for printing colored and styled text to the terminal using ANSI escape codes.
 
 ![All colors in normal, bright and background variants, and the text styles](.images/palette.svg)
