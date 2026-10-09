@@ -40,14 +40,15 @@ interface ColoredConsole {
     sealed class Style {
 
         // bg and bright change the most recently added color, wherever it is in the style
-        val bg: Style get() = changeLatestColor(Int::toBackground) ?: this
+        val bg: Style get() = changeLatestColor(List<Int>::toBackground) ?: this
 
-        val bright: Style get() = changeLatestColor(Int::toBright) ?: this
+        val bright: Style get() = changeLatestColor(List<Int>::toBright) ?: this
 
         // A Composite's parent was added after its child, so it is searched first.
-        private fun changeLatestColor(change: (Int) -> Int): Style? = when (this) {
+        private fun changeLatestColor(change: (List<Int>) -> List<Int>): Style? = when (this) {
             is NotApplied -> null
-            is Simple -> if (code.isColor) Simple(change(code)) else null
+            is Simple -> if (code.isColor) Simple(change(listOf(code)).single()) else null
+            is Extended -> if (codes.isColor) Extended(change(codes)) else null
             is Composite -> parent.changeLatestColor(change)?.let { copy(parent = it) }
                     ?: child.changeLatestColor(change)?.let { copy(child = it) }
         }
@@ -62,15 +63,16 @@ interface ColoredConsole {
             override fun wrap(text: String) = text.applyCodes(code)
         }
 
+        // One escape code with several parameters: 38;5;n (256 colors) or 38;2;r;g;b (true color), 48 for backgrounds.
+        data class Extended(val codes: List<Int>) : Style() {
+            override fun wrap(text: String) = text.applyTags(ansi(codes))
+        }
+
         data class Composite(val parent: Style, val child: Style) : Style() {
             override fun wrap(text: String) = parent.wrap(child.wrap(text))
         }
 
-        operator fun plus(style: Style) = when (this) {
-            is NotApplied -> this
-            is Simple -> Composite(style, this)
-            is Composite -> Composite(style, this)
-        }
+        operator fun plus(style: Style) = if (this is NotApplied) this else Composite(style, this)
     }
 
     // Every named style and color goes through style() or wrap(), the only two places that emit codes.
@@ -84,9 +86,9 @@ interface ColoredConsole {
 
     private val stylingEnabled get() = this !is ColorConsoleDisabled
 
-    val String.bright get() = changeLatestColor(Int::toBright)
+    val String.bright get() = changeLatestColor(List<Int>::toBright)
 
-    val String.bg get() = changeLatestColor(Int::toBackground)
+    val String.bg get() = changeLatestColor(List<Int>::toBackground)
 
     // region styles
     val bold: Style get() = Style.Simple(HIGH_INTENSITY)
@@ -175,6 +177,12 @@ interface ColoredConsole {
     fun <N> N.purple(predicate: (N) -> Boolean = { true }) = style(this@ColoredConsole.purple, predicate)
     fun purple(text: Any) = text.style(purple)
 
+    val magenta: Style get() = Style.Simple(MAGENTA)
+    val <N : Style> N.magenta: Style get() = this + this@ColoredConsole.magenta
+    val <N> N.magenta get() = style(this@ColoredConsole.magenta)
+    fun <N> N.magenta(predicate: (N) -> Boolean = { true }) = style(this@ColoredConsole.magenta, predicate)
+    fun magenta(text: Any) = text.style(magenta)
+
     val cyan: Style get() = Style.Simple(CYAN)
     val <N : Style> N.cyan: Style get() = this + this@ColoredConsole.cyan
     val <N> N.cyan get() = style(this@ColoredConsole.cyan)
@@ -186,6 +194,28 @@ interface ColoredConsole {
     val <N> N.white get() = style(this@ColoredConsole.white)
     fun <N> N.white(predicate: (N) -> Boolean = { true }) = style(this@ColoredConsole.white, predicate)
     fun white(text: Any) = text.style(white)
+
+    val gray: Style get() = Style.Simple(GRAY)
+    val <N : Style> N.gray: Style get() = this + this@ColoredConsole.gray
+    val <N> N.gray get() = style(this@ColoredConsole.gray)
+    fun <N> N.gray(predicate: (N) -> Boolean = { true }) = style(this@ColoredConsole.gray, predicate)
+    fun gray(text: Any) = text.style(gray)
+    // endregion
+
+    // region extended colors
+    fun rgb(red: Int, green: Int, blue: Int): Style {
+        require(red in 0..255 && green in 0..255 && blue in 0..255) { "rgb values must be in 0..255: $red, $green, $blue" }
+        return Style.Extended(listOf(EXTENDED_FOREGROUND, TRUE_COLOR, red, green, blue))
+    }
+    fun <N : Style> N.rgb(red: Int, green: Int, blue: Int): Style = this + this@ColoredConsole.rgb(red, green, blue)
+    fun <N> N.rgb(red: Int, green: Int, blue: Int) = style(this@ColoredConsole.rgb(red, green, blue))
+
+    fun color256(index: Int): Style {
+        require(index in 0..255) { "color256 index must be in 0..255: $index" }
+        return Style.Extended(listOf(EXTENDED_FOREGROUND, PALETTE_256, index))
+    }
+    fun <N : Style> N.color256(index: Int): Style = this + this@ColoredConsole.color256(index)
+    fun <N> N.color256(index: Int) = style(this@ColoredConsole.color256(index))
     // endregion
 
     companion object {
@@ -210,6 +240,7 @@ interface ColoredConsole {
         const val YELLOW = 33
         const val BLUE = 34
         const val PURPLE = 35
+        const val MAGENTA = PURPLE
         const val CYAN = 36
         const val WHITE = 37
 
@@ -235,6 +266,8 @@ interface ColoredConsole {
 
         const val BRIGHT_WHITE = WHITE + BRIGHT_SHIFT
 
+        const val GRAY = BRIGHT_BLACK
+
         val reEscape = Regex("\\u001B\\[([0-9]{1,2})m")
     }
 }
@@ -248,23 +281,52 @@ private fun Int.toBackground() = if (isForegroundColor) this + BACKGROUND_SHIFT 
 private fun Int.toBright() =
         if (this in BLACK..WHITE || this in BLACK + BACKGROUND_SHIFT..WHITE + BACKGROUND_SHIFT) this + BRIGHT_SHIFT else this
 
+private const val EXTENDED_FOREGROUND = 38
+private const val EXTENDED_BACKGROUND = 48
+private const val PALETTE_256 = 5
+private const val TRUE_COLOR = 2
+
+// The parameters of one escape code: [31], or [38, 5, n] / [38, 2, r, g, b] for an extended color.
+private val List<Int>.isColor get() = when (size) {
+    0 -> false
+    1 -> single().isColor
+    else -> first() == EXTENDED_FOREGROUND || first() == EXTENDED_BACKGROUND
+}
+private fun List<Int>.toBackground() = when {
+    size == 1 -> listOf(single().toBackground())
+    firstOrNull() == EXTENDED_FOREGROUND -> listOf(EXTENDED_BACKGROUND) + drop(1)
+    else -> this
+}
+// Extended colors have no bright variant.
+private fun List<Int>.toBright() = if (size == 1) listOf(single().toBright()) else this
+
 private fun ansi(code: Int) = "\u001B[${code}m"
+private fun ansi(codes: List<Int>) = "\u001B[${codes.joinToString(";")}m"
 private val reset = ansi(RESET)
-private val leadingCodes = Regex("^(?:\u001B\\[\\d+m)+")
-private val ansiCode = Regex("\u001B\\[(\\d+)m")
+private val leadingCodes = Regex("^(?:\u001B\\[[\\d;]*m)+")
+private val ansiCode = Regex("\u001B\\[([\\d;]*)m")
+private val MatchResult.parameters get() = groupValues[1].split(';').map { it.toIntOrNull() ?: 0 }
 
-private fun String.applyCodes(vararg codes: Int): String {
-    val tags = codes.joinToString("") { ansi(it) }
-    return split(reset).filter { it.isNotEmpty() }.joinToString("") { tags + it + reset }
-}
+private fun String.applyTags(tags: String) = split(reset).filter { it.isNotEmpty() }.joinToString("") { tags + it + reset }
 
-// applyCodes starts every segment between resets with the codes of all styles applied to it, the most
+private fun String.applyCodes(vararg codes: Int) = applyTags(codes.joinToString("") { ansi(it) })
+
+// applyTags starts every segment between resets with the codes of all styles applied to it, the most
 // recent first, so the first color among a segment's leading codes is its most recently applied color.
-private fun String.changeLatestColor(change: (Int) -> Int) = split(reset).joinToString(reset) { segment ->
+private fun String.changeLatestColor(change: (List<Int>) -> List<Int>) = split(reset).joinToString(reset) { segment ->
     val codes = leadingCodes.find(segment)?.value.orEmpty()
-    val color = ansiCode.findAll(codes).firstOrNull { it.groupValues[1].toInt().isColor }
-    if (color == null) segment else segment.replaceRange(color.range, ansi(change(color.groupValues[1].toInt())))
+    val color = ansiCode.findAll(codes).firstOrNull { it.parameters.isColor }
+    if (color == null) segment else segment.replaceRange(color.range, ansi(change(color.parameters)))
 }
+
+// Any ANSI control sequence (ESC [ parameters intermediates final), not only colors and styles.
+private val escapeSequence = Regex("\u001B\\[[0-?]*[ -/]*[@-~]")
+
+/** This text without ANSI escape codes, for example to write styled text to a log file. */
+fun String.stripAnsi() = replace(escapeSequence, "")
+
+/** The number of characters this text shows. Wide characters such as emoji still count by their UTF-16 length. */
+val String.visibleLength get() = stripAnsi().length
 
 fun <R> colored(enabled: Boolean = true, block: ColoredConsole.() -> R): R =
         if (enabled) object : ColoredConsole {}.block() else object : ColorConsoleDisabled {}.block()

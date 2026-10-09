@@ -4,7 +4,9 @@ import com.github.mm.coloredconsole.ColoredConsole
 import com.github.mm.coloredconsole.colored
 import com.github.mm.coloredconsole.print
 import com.github.mm.coloredconsole.println
+import com.github.mm.coloredconsole.stripAnsi
 import com.github.mm.coloredconsole.style
+import com.github.mm.coloredconsole.visibleLength
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.PrintStream
@@ -35,6 +37,10 @@ private val examples: List<Pair<String, () -> Unit>> = listOf(
     },
     "bright" to {
         println { "bright blue".blue.bright.bold }
+    },
+    "extended-colors" to {
+        println { "256 colors".color256(208) + " and " + "true color".rgb(95, 135, 255).bold }
+        println { " on a background ".black.rgb(255, 215, 95).bg }
     },
     "custom-style" to {
         val header = style { green + underline + bold }
@@ -79,6 +85,18 @@ private val examples: List<Pair<String, () -> Unit>> = listOf(
     "class" to {
         Weather(22).display()
     },
+    "visible-length" to {
+        colored {
+            val steps = listOf("build" to "OK".green, "tests" to "FAILED".red.bold, "deploy" to "SKIPPED".faint)
+            for ((step, status) in steps) {
+                println(status + " ".repeat(10 - status.visibleLength) + step)
+            }
+        }
+    },
+    "strip-ansi" to {
+        val message = colored { "Error:".red.bold + " disk full" }
+        println(message.stripAnsi())
+    },
 )
 
 // The overview image at the top of the README: every color and style.
@@ -121,9 +139,10 @@ private fun capture(example: () -> Unit): String {
 
 // region ANSI parsing
 
+// fg and bg are CSS colors; null is the terminal's default.
 private data class Attributes(
-    val fg: Int? = null,
-    val bg: Int? = null,
+    val fg: String? = null,
+    val bg: String? = null,
     val bold: Boolean = false,
     val faint: Boolean = false,
     val italic: Boolean = false,
@@ -143,12 +162,46 @@ private fun parse(output: String): List<List<Run>> = output.lines().map { line -
     var position = 0
     for (match in sgr.findAll(line)) {
         if (match.range.first > position) runs += Run(line.substring(position, match.range.first), attributes)
-        match.groupValues[1].split(';').forEach { attributes = attributes.withCode(it.toIntOrNull() ?: 0) }
+        attributes = attributes.withCodes(match.groupValues[1].split(';').map { it.toIntOrNull() ?: 0 })
         position = match.range.last + 1
     }
     if (position < line.length) runs += Run(line.substring(position), attributes)
     runs
 }
+
+// One escape code can hold several parameters; 38/48 start an extended color: 5;n or 2;r;g;b.
+private fun Attributes.withCodes(codes: List<Int>): Attributes {
+    var attributes = this
+    var i = 0
+    while (i < codes.size) {
+        val code = codes[i]
+        val color = when {
+            code != 38 && code != 48 -> null
+            codes.getOrNull(i + 1) == 5 -> xterm256(codes[i + 2]).also { i += 3 }
+            codes.getOrNull(i + 1) == 2 -> hex(codes[i + 2], codes[i + 3], codes[i + 4]).also { i += 5 }
+            else -> error("Unsupported extended color in $codes")
+        }
+        attributes = when {
+            color == null -> attributes.withCode(code).also { i++ }
+            code == 38 -> attributes.copy(fg = color)
+            else -> attributes.copy(bg = color)
+        }
+    }
+    return attributes
+}
+
+// The xterm 256-color palette: the 16 ANSI colors, a 6x6x6 color cube, then 24 grays.
+private fun xterm256(index: Int): String = when (index) {
+    in 0..15 -> palette[index]
+    in 16..231 -> (index - 16).let { cube ->
+        val level = { step: Int -> if (step == 0) 0 else 55 + step * 40 }
+        hex(level(cube / 36), level(cube / 6 % 6), level(cube % 6))
+    }
+    else -> (8 + (index - 232) * 10).let { gray -> hex(gray, gray, gray) }
+}
+
+private fun hex(red: Int, green: Int, blue: Int) =
+    "#" + listOf(red, green, blue).joinToString("") { it.toString(16).padStart(2, '0') }
 
 // Bold and faint share one intensity setting, so the later one wins (as in most terminals).
 // Blink (5) is drawn as normal text.
@@ -162,10 +215,10 @@ private fun Attributes.withCode(code: Int) = when (code) {
     7 -> copy(reverse = true)
     8 -> copy(hidden = true)
     9 -> copy(strike = true)
-    in 30..37 -> copy(fg = code - 30)
-    in 40..47 -> copy(bg = code - 40)
-    in 90..97 -> copy(fg = code - 90 + 8)
-    in 100..107 -> copy(bg = code - 100 + 8)
+    in 30..37 -> copy(fg = palette[code - 30])
+    in 40..47 -> copy(bg = palette[code - 40])
+    in 90..97 -> copy(fg = palette[code - 90 + 8])
+    in 100..107 -> copy(bg = palette[code - 100 + 8])
     else -> error("Unsupported SGR code $code")
 }
 
@@ -225,8 +278,8 @@ private fun StringBuilder.appendRun(run: Run, x: Int, top: Int) {
     val a = run.attributes
     val width = run.text.length * CELL_WIDTH
     val baseline = top + BASELINE
-    var fg = a.fg?.let(palette::get) ?: FOREGROUND
-    var bg = a.bg?.let(palette::get)
+    var fg = a.fg ?: FOREGROUND
+    var bg = a.bg
     if (a.reverse) bg = fg.also { fg = bg ?: BACKGROUND }
 
     if (bg != null) appendLine("""<rect x="$x" y="$top" width="$width" height="$LINE_HEIGHT" fill="$bg"/>""")

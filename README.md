@@ -12,11 +12,12 @@ A small Kotlin DSL for printing colored and styled text to the terminal using AN
 ## Features
 
 - **Text styles:** `bold`, `faint`, `italic`, `underline`, `strike`, `blink`, `reverse`, `hidden`
-- **Colors:** `black`, `red`, `green`, `yellow`, `blue`, `purple`, `cyan`, `white`
-- Bright and background colors
+- **Colors:** `black`, `red`, `green`, `yellow`, `blue`, `purple` (also `magenta`), `cyan`, `white`, and `gray`
+- Bright and background colors, plus 256-color and true-color (RGB) support
 - Reusable custom styles
 - Conditional and nested styling
 - Styling can be switched off with a single flag
+- Helpers to strip escape codes and measure the visible length of styled text
 - A single source file with no dependencies, usable in Kotlin Multiplatform common code
 
 ## Requirements
@@ -34,7 +35,9 @@ import com.github.mm.coloredconsole.ColoredConsole
 import com.github.mm.coloredconsole.colored
 import com.github.mm.coloredconsole.print
 import com.github.mm.coloredconsole.println
+import com.github.mm.coloredconsole.stripAnsi
 import com.github.mm.coloredconsole.style
+import com.github.mm.coloredconsole.visibleLength
 ```
 
 ## Usage
@@ -88,6 +91,17 @@ println { "bright blue".blue.bright.bold }
 ![Output: "bright blue" in bold bright blue](.images/bright.svg)
 
 Other styles can come in between: `"text".cyan.bold.bg` is the same as `"text".cyan.bg.bold`. Combine both for a bright background, in either order: `.bright.bg` or `.bg.bright`. The same works for custom styles, so `(green + underline).bright` is the same as `green.bright + underline`.
+
+### 256 colors and true color
+
+`color256(n)` picks one of the 256 colors of the extended palette (`0` to `255`), and `rgb(r, g, b)` any 24-bit color. They work like the named colors: on any value, as styles, and with `.bg`. They need a terminal that supports 256 or 24-bit colors.
+
+```kotlin
+println { "256 colors".color256(208) + " and " + "true color".rgb(95, 135, 255).bold }
+println { " on a background ".black.rgb(255, 215, 95).bg }
+```
+
+![Output: "256 colors" in orange and "true color" in bold light blue, then black text on a yellow background](.images/extended-colors.svg)
 
 ### Custom styles
 
@@ -183,6 +197,32 @@ Weather(22).display()
 ```
 
 ![Output: "Degrees:" in bold blue followed by 22 in bold italic](.images/class.svg)
+
+### Measuring and stripping styled text
+
+Escape codes count toward a string's `length`, which breaks alignment. `visibleLength` counts only the characters the text shows:
+
+```kotlin
+colored {
+    val steps = listOf("build" to "OK".green, "tests" to "FAILED".red.bold, "deploy" to "SKIPPED".faint)
+    for ((step, status) in steps) {
+        println(status + " ".repeat(10 - status.visibleLength) + step)
+    }
+}
+```
+
+![Output: three aligned rows, "OK" in green, "FAILED" in bold red and "SKIPPED" faint, each followed by its step](.images/visible-length.svg)
+
+`stripAnsi()` removes all escape codes, for example to write the same text to a log file:
+
+```kotlin
+val message = colored { "Error:".red.bold + " disk full" }
+println(message.stripAnsi())
+```
+
+![Output: "Error: disk full" as plain text](.images/strip-ansi.svg)
+
+Both work on any string, also outside `colored { }`. `visibleLength` counts characters, not terminal columns, so text with wide characters such as emoji or CJK may not line up exactly.
 
 ## Development
 

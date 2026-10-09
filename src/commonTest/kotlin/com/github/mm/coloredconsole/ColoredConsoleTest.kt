@@ -119,7 +119,8 @@ class TestANSI {
     fun disabledStylesEmitNoCodes() {
         colored(enabled = false) {
             listOf(bold, faint, italic, underline, blink, reverse, hidden, strike,
-                   black, red, green, yellow, blue, purple, cyan, white).forEach {
+                   black, red, green, yellow, blue, purple, magenta, cyan, white, gray,
+                   rgb(1, 2, 3), color256(208)).forEach {
                 assertEquals("x", "x".style(it))
                 assertEquals("x", "x"(it + bold))
                 assertEquals("x", "x"(bold + it))
@@ -141,6 +142,10 @@ class TestANSI {
             assertEquals("x", italic("x"))
             assertEquals("x", "x".wrap(1, 31))
             assertEquals("x", "x".red.bg.bright)
+            assertEquals("x", "x".rgb(1, 2, 3))
+            assertEquals("x", "x".color256(208).bg)
+            assertEquals("x", "x".magenta { true })
+            assertEquals("x", gray("x"))
         }
     }
 
@@ -183,6 +188,59 @@ class TestANSI {
             assertEquals("${esc(31)}42${esc(0)}", red(42))
         }
     }
+    @Test
+    fun extendedColors() {
+        colored {
+            assertEquals("${esc("38;2;255;135;0")}x${esc(0)}", "x".rgb(255, 135, 0))
+            assertEquals("${esc("38;5;208")}x${esc(0)}", "x".color256(208))
+            assertEquals("${esc(1)}${esc("38;2;1;2;3")}x${esc(0)}", "x"(rgb(1, 2, 3) + bold))
+            assertEquals("x"(bold + rgb(1, 2, 3)), "x"(bold.rgb(1, 2, 3)))
+            assertEquals("x"(bold + color256(9)), "x"(bold.color256(9)))
+
+            assertEquals("${esc("48;5;208")}x${esc(0)}", "x".color256(208).bg)
+            assertEquals("${esc(1)}${esc("48;2;1;2;3")}x${esc(0)}", "x".rgb(1, 2, 3).bold.bg)
+            assertEquals("x"(color256(208).bg), "x".color256(208).bg)
+            // An extended color is the most recent color: .bg changes it and leaves red as the text color,
+            // and .bright stops at it (there is no bright variant) instead of brightening red.
+            assertEquals("${esc("48;5;208")}${esc(31)}x${esc(0)}", "x".red.color256(208).bg)
+            assertEquals("x".red.color256(208), "x".red.color256(208).bright)
+            assertEquals("x"(red + color256(208)), "x"((red + color256(208)).bright))
+        }
+        assertFailsWith<IllegalArgumentException> { colored { rgb(256, 0, 0) } }
+        assertFailsWith<IllegalArgumentException> { colored { "x".color256(-1) } }
+    }
+
+    @Test
+    fun magentaAndGray() {
+        colored {
+            assertEquals("${esc(35)}x${esc(0)}", "x".magenta)
+            assertEquals("x".purple, "x".magenta)
+            assertEquals("x".magenta, "x".magenta { true })
+            assertEquals("x".magenta, magenta("x"))
+            assertEquals("x".magenta, "x"(magenta))
+            assertEquals("x".magenta.bold, "x"(magenta.bold))
+            assertEquals("${esc(95)}x${esc(0)}", "x".magenta.bright)
+
+            assertEquals("${esc(90)}x${esc(0)}", "x".gray)
+            assertEquals("x".gray, "x".gray { true })
+            assertEquals("x".gray, gray("x"))
+            assertEquals("x".gray, "x"(gray))
+            assertEquals("x".gray.bold, "x"(gray.bold))
+            assertEquals("x".gray, "x".gray.bright)
+            assertEquals("${esc(100)}x${esc(0)}", "x".gray.bg)
+        }
+    }
+
+    @Test
+    fun stripAnsiAndVisibleLength() {
+        val message = colored { "Error:".red.bold + " disk " + "full".rgb(255, 135, 0).bg }
+        assertEquals("Error: disk full", message.stripAnsi())
+        assertEquals(16, message.visibleLength)
+        assertEquals("ab", "a\u001B[2Kb".stripAnsi())
+        assertEquals("plain", "plain".stripAnsi())
+        assertEquals(5, "plain".visibleLength)
+    }
 }
 
 private fun esc(code: Int) = "\u001B[${code}m"
+private fun esc(codes: String) = "\u001B[${codes}m"
