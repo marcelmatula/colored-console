@@ -114,4 +114,21 @@ class TestANSI {
         println { "Chapter 7."(header) }
 
     }
+
+    @Test
+    fun disabledStylesEmitNoCodes() {
+        colored(enabled = false) {
+            listOf(bold, faint, italic, underline, blink, reverse, hidden, strike,
+                   black, red, green, yellow, blue, purple, cyan, white).forEach {
+                assertEquals("x", "x".style(it))
+                assertEquals("x", "x"(it + bold))
+                assertEquals("x", "x"(bold + it))
+            }
+        }
+
+        colored {
+            assertEquals("\u001B[2mx\u001B[0m", "x".style(faint))
+            assertEquals("\u001B[9mx\u001B[0m", "x".style(strike))
+        }
+    }
 }

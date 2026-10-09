@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="96" viewBox="0 0 560 96" role="img">
+<title>Hello world
+Hello world</title>
+<rect x="0.5" y="0.5" width="559" height="95" rx="8" fill="#282c34" stroke="#3e4451"/>
+<circle cx="20" cy="19" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="19" r="6" fill="#febc2e"/>
+<circle cx="60" cy="19" r="6" fill="#28c840"/>
+<g font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="15">
+<text x="18" y="54" textLength="99" lengthAdjust="spacing" fill="#98c379" font-weight="bold">Hello world</text>
+<line x1="18" y1="57.5" x2="117" y2="57.5" stroke="#98c379"/>
+<text x="18" y="76" textLength="99" lengthAdjust="spacing" fill="#b5e48c" font-weight="bold">Hello world</text>
+<line x1="18" y1="79.5" x2="117" y2="79.5" stroke="#b5e48c"/>
+</g>
+</svg>

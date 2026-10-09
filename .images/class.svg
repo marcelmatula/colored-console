@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="74" viewBox="0 0 560 74" role="img">
+<title>Degrees: 22</title>
+<rect x="0.5" y="0.5" width="559" height="73" rx="8" fill="#282c34" stroke="#3e4451"/>
+<circle cx="20" cy="19" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="19" r="6" fill="#febc2e"/>
+<circle cx="60" cy="19" r="6" fill="#28c840"/>
+<g font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="15">
+<text x="18" y="54" textLength="72" lengthAdjust="spacing" fill="#61afef" font-weight="bold">Degrees:</text>
+<text x="90" y="54" textLength="27" lengthAdjust="spacing" fill="#abb2bf" font-weight="bold" font-style="italic"> 22</text>
+</g>
+</svg>
