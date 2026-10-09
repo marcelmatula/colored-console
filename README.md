@@ -66,13 +66,13 @@ println { pi.blue.italic.underline }
 
 ### Background and bright colors
 
-`.bg` turns the color before it into a background color:
+`.bg` turns the color before it into a background color, so you can combine it with a text color:
 
 ```kotlin
-println { "Hello world".cyan.bg }
+println { "Hello world".black.cyan.bg }
 ```
 
-![Output: "Hello world" on a cyan background](.images/background.svg)
+![Output: "Hello world" in black on a cyan background](.images/background.svg)
 
 `.bright` switches the color before it to its bright variant:
 

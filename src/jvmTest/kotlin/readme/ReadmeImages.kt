@@ -31,7 +31,7 @@ private val examples: List<Pair<String, () -> Unit>> = listOf(
         println { pi.blue.italic.underline }
     },
     "background" to {
-        println { "Hello world".cyan.bg }
+        println { "Hello world".black.cyan.bg }
     },
     "bright" to {
         println { "bright blue".blue.bright.bold }
