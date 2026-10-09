@@ -231,6 +231,8 @@ private interface ColorConsoleDisabled : ColoredConsole {
 
     override val bold get() = NotApplied
     override val <N : Style> N.bold: Style get() = NotApplied
+    override val faint get() = NotApplied
+    override val <N : Style> N.faint: Style get() = NotApplied
     override val italic get() = NotApplied
     override val <N : Style> N.italic: Style get() = NotApplied
     override val underline get() = NotApplied
@@ -241,6 +243,8 @@ private interface ColorConsoleDisabled : ColoredConsole {
     override val <N : Style> N.reverse: Style get() = NotApplied
     override val hidden get() = NotApplied
     override val <N : Style> N.hidden: Style get() = NotApplied
+    override val strike get() = NotApplied
+    override val <N : Style> N.strike: Style get() = NotApplied
 
     override val red get() = NotApplied
     override val <N : Style> N.red: Style get() = NotApplied
