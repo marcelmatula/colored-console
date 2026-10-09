@@ -66,7 +66,7 @@ println { pi.blue.italic.underline }
 
 ### Background and bright colors
 
-`.bg` turns the color before it into a background color, so you can combine it with a text color:
+`.bg` turns the most recently applied color into a background color, so you can combine it with a text color:
 
 ```kotlin
 println { "Hello world".black.cyan.bg }
@@ -74,7 +74,7 @@ println { "Hello world".black.cyan.bg }
 
 ![Output: "Hello world" in black on a cyan background](.images/background.svg)
 
-`.bright` switches the color before it to its bright variant:
+`.bright` switches the most recently applied color to its bright variant:
 
 ```kotlin
 println { "bright blue".blue.bright.bold }
@@ -82,8 +82,7 @@ println { "bright blue".blue.bright.bold }
 
 ![Output: "bright blue" in bold bright blue](.images/bright.svg)
 
-> [!NOTE]
-> `.bg` and `.bright` only affect a color they directly follow. `"text".cyan.bg.bold` works, but in `"text".cyan.bold.bg` the `.bg` has no effect. For a bright background, use `.bright.bg`.
+Other styles can come in between: `"text".cyan.bold.bg` is the same as `"text".cyan.bg.bold`. Combine both for a bright background, in either order: `.bright.bg` or `.bg.bright`. The same works for custom styles, so `(green + underline).bright` is the same as `green.bright + underline`.
 
 ### Custom styles
 

@@ -10,10 +10,10 @@ Ideas for improving Colored Console, roughly in order of value within each secti
 
 ## Code
 
-- [ ] **Handle disabled styling in one place.** `colored(enabled = false)` works by overriding every style member in `ColorConsoleDisabled` to return `NotApplied`, so any member without an override still emits escape codes. That is how `faint` and `strike` leaked codes before 1.0.0. Checking the enabled flag where a style is applied would rule out this kind of bug and remove about 30 overrides.
-- [ ] **Make `.bg` and `.bright` independent of order.** Today they only change the color they directly follow: `"x".cyan.bg.bold` works, but in `"x".cyan.bold.bg` the `.bg` silently has no effect. Applying them to the most recent color instead would remove this trap and the README note about it.
-- [ ] **Consistent function signatures.** `bold(text)` and `faint(text)` accept any value, while `italic(text)`, `red(text)` and the other functions accept only a `String`.
-- [ ] **Remove leftover code.** `colored()` contains a no-op `check(true)` and a commented-out contract.
+- [x] **Handle disabled styling in one place.** Every named style and color now goes through `style()`, and only `style()` and `wrap()` check whether styling is enabled. `ColorConsoleDisabled` no longer overrides each style (that is how `faint` and `strike` leaked codes before 1.0.0), so a new style cannot be missed.
+- [x] **Make `.bg` and `.bright` independent of order.** They change the most recently applied color, so `"x".cyan.bold.bg` is the same as `"x".cyan.bg.bold`, and `(green + underline).bright` works. On nested text they now change every segment, not just the first.
+- [x] **Consistent function signatures.** `italic(text)`, `red(text)` and the other plain functions accept any value, like `bold(text)` and `faint(text)`.
+- [x] **Remove leftover code.** The no-op `check(true)` and the commented-out contract in `colored()` are gone. `wrap()` with several codes also no longer puts a literal `, ` between them.
 
 ## Features
 
