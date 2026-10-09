@@ -131,4 +131,58 @@ class TestANSI {
             assertEquals("\u001B[9mx\u001B[0m", "x".style(strike))
         }
     }
+
+    @Test
+    fun disabledModeEmitsNoCodesInAnyForm() {
+        colored(enabled = false) {
+            assertEquals("x", "x".bold)
+            assertEquals("x", "x".red.underline)
+            assertEquals("x", "x".cyan { true })
+            assertEquals("x", italic("x"))
+            assertEquals("x", "x".wrap(1, 31))
+            assertEquals("x", "x".red.bg.bright)
+        }
+    }
+
+    @Test
+    fun wrapAppliesSeveralCodes() {
+        colored {
+            assertEquals("${esc(1)}${esc(31)}x${esc(0)}", "x".wrap(1, 31))
+        }
+    }
+
+    @Test
+    fun bgAndBrightChangeTheMostRecentColor() {
+        colored {
+            assertEquals("${esc(1)}${esc(46)}x${esc(0)}", "x".cyan.bold.bg)
+            assertEquals("x".cyan.bg.bold, "x".cyan.bold.bg)
+            assertEquals("${esc(106)}x${esc(0)}", "x".cyan.bg.bright)
+            assertEquals("x".cyan.bright.bg, "x".cyan.bg.bright)
+            assertEquals("x".bold, "x".bold.bg)
+            assertEquals("x".bold, "x".bold.bright)
+
+            assertEquals("x"(green.bright + underline), "x"((green + underline).bright))
+            assertEquals("x"(cyan.bright.bg + bold), "x"((cyan + bold).bg.bright))
+            // The most recent color is already a background, so blue stays a text color.
+            assertEquals("x"(blue + red.bg), "x"((blue + red.bg).bg))
+            assertEquals("x"(bold), "x"(bold.bg))
+        }
+    }
+
+    @Test
+    fun bgChangesEverySegmentOfNestedText() {
+        colored {
+            assertEquals("${esc(46)}a${esc(31)}b${esc(0)}${esc(46)}c${esc(0)}", ("a" + "b".red + "c").cyan.bg)
+        }
+    }
+
+    @Test
+    fun plainFunctionsAcceptAnyValue() {
+        colored {
+            assertEquals("${esc(3)}3.14${esc(0)}", italic(3.14))
+            assertEquals("${esc(31)}42${esc(0)}", red(42))
+        }
+    }
 }
+
+private fun esc(code: Int) = "\u001B[${code}m"
