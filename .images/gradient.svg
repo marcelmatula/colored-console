@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="96" viewBox="0 0 560 96" role="img">
+<title>Hello from Colored Console!
+  as a background gradient  </title>
+<rect x="0.5" y="0.5" width="559" height="95" rx="8" fill="#282c34" stroke="#3e4451"/>
+<circle cx="20" cy="19" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="19" r="6" fill="#febc2e"/>
+<circle cx="60" cy="19" r="6" fill="#28c840"/>
+<g font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="15">
+<text x="18" y="54" textLength="9" lengthAdjust="spacing" fill="#ff5f87" font-weight="bold">H</text>
+<text x="27" y="54" textLength="9" lengthAdjust="spacing" fill="#f9628c" font-weight="bold">e</text>
+<text x="36" y="54" textLength="9" lengthAdjust="spacing" fill="#f36590" font-weight="bold">l</text>
+<text x="45" y="54" textLength="9" lengthAdjust="spacing" fill="#ed6895" font-weight="bold">l</text>
+<text x="54" y="54" textLength="9" lengthAdjust="spacing" fill="#e66b99" font-weight="bold">o</text>
+<text x="72" y="54" textLength="9" lengthAdjust="spacing" fill="#da71a3" font-weight="bold">f</text>
+<text x="81" y="54" textLength="9" lengthAdjust="spacing" fill="#d475a7" font-weight="bold">r</text>
+<text x="90" y="54" textLength="9" lengthAdjust="spacing" fill="#ce78ac" font-weight="bold">o</text>
+<text x="99" y="54" textLength="9" lengthAdjust="spacing" fill="#c87bb1" font-weight="bold">m</text>
+<text x="117" y="54" textLength="9" lengthAdjust="spacing" fill="#bb81ba" font-weight="bold">C</text>
+<text x="126" y="54" textLength="9" lengthAdjust="spacing" fill="#b584be" font-weight="bold">o</text>
+<text x="135" y="54" textLength="9" lengthAdjust="spacing" fill="#af87c3" font-weight="bold">l</text>
+<text x="144" y="54" textLength="9" lengthAdjust="spacing" fill="#a98ac8" font-weight="bold">o</text>
+<text x="153" y="54" textLength="9" lengthAdjust="spacing" fill="#a38dcc" font-weight="bold">r</text>
+<text x="162" y="54" textLength="9" lengthAdjust="spacing" fill="#9d90d1" font-weight="bold">e</text>
+<text x="171" y="54" textLength="9" lengthAdjust="spacing" fill="#9693d5" font-weight="bold">d</text>
+<text x="189" y="54" textLength="9" lengthAdjust="spacing" fill="#8a99df" font-weight="bold">C</text>
+<text x="198" y="54" textLength="9" lengthAdjust="spacing" fill="#849de3" font-weight="bold">o</text>
+<text x="207" y="54" textLength="9" lengthAdjust="spacing" fill="#7ea0e8" font-weight="bold">n</text>
+<text x="216" y="54" textLength="9" lengthAdjust="spacing" fill="#78a3ed" font-weight="bold">s</text>
+<text x="225" y="54" textLength="9" lengthAdjust="spacing" fill="#71a6f1" font-weight="bold">o</text>
+<text x="234" y="54" textLength="9" lengthAdjust="spacing" fill="#6ba9f6" font-weight="bold">l</text>
+<text x="243" y="54" textLength="9" lengthAdjust="spacing" fill="#65acfa" font-weight="bold">e</text>
+<text x="252" y="54" textLength="9" lengthAdjust="spacing" fill="#5fafff" font-weight="bold">!</text>
+<rect x="18" y="60" width="9" height="22" fill="#5fd7af"/>
+<rect x="27" y="60" width="9" height="22" fill="#62d4b2"/>
+<rect x="36" y="60" width="9" height="22" fill="#65d1b5"/>
+<text x="36" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">a</text>
+<rect x="45" y="60" width="9" height="22" fill="#68ceb8"/>
+<text x="45" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">s</text>
+<rect x="54" y="60" width="9" height="22" fill="#6bcbbb"/>
+<rect x="63" y="60" width="9" height="22" fill="#6ec8be"/>
+<text x="63" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">a</text>
+<rect x="72" y="60" width="9" height="22" fill="#71c5c1"/>
+<rect x="81" y="60" width="9" height="22" fill="#74c2c4"/>
+<text x="81" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">b</text>
+<rect x="90" y="60" width="9" height="22" fill="#77bfc7"/>
+<text x="90" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">a</text>
+<rect x="99" y="60" width="9" height="22" fill="#7abcca"/>
+<text x="99" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">c</text>
+<rect x="108" y="60" width="9" height="22" fill="#7db9cd"/>
+<text x="108" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">k</text>
+<rect x="117" y="60" width="9" height="22" fill="#80b6d0"/>
+<text x="117" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">g</text>
+<rect x="126" y="60" width="9" height="22" fill="#83b3d3"/>
+<text x="126" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">r</text>
+<rect x="135" y="60" width="9" height="22" fill="#86b0d6"/>
+<text x="135" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">o</text>
+<rect x="144" y="60" width="9" height="22" fill="#88aed8"/>
+<text x="144" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">u</text>
+<rect x="153" y="60" width="9" height="22" fill="#8babdb"/>
+<text x="153" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">n</text>
+<rect x="162" y="60" width="9" height="22" fill="#8ea8de"/>
+<text x="162" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">d</text>
+<rect x="171" y="60" width="9" height="22" fill="#91a5e1"/>
+<rect x="180" y="60" width="9" height="22" fill="#94a2e4"/>
+<text x="180" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">g</text>
+<rect x="189" y="60" width="9" height="22" fill="#979fe7"/>
+<text x="189" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">r</text>
+<rect x="198" y="60" width="9" height="22" fill="#9a9cea"/>
+<text x="198" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">a</text>
+<rect x="207" y="60" width="9" height="22" fill="#9d99ed"/>
+<text x="207" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">d</text>
+<rect x="216" y="60" width="9" height="22" fill="#a096f0"/>
+<text x="216" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">i</text>
+<rect x="225" y="60" width="9" height="22" fill="#a393f3"/>
+<text x="225" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">e</text>
+<rect x="234" y="60" width="9" height="22" fill="#a690f6"/>
+<text x="234" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">n</text>
+<rect x="243" y="60" width="9" height="22" fill="#a98df9"/>
+<text x="243" y="76" textLength="9" lengthAdjust="spacing" fill="#3f4451">t</text>
+<rect x="252" y="60" width="9" height="22" fill="#ac8afc"/>
+<rect x="261" y="60" width="9" height="22" fill="#af87ff"/>
+</g>
+</svg>

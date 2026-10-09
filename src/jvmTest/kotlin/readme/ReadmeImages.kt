@@ -42,6 +42,10 @@ private val examples: List<Pair<String, () -> Unit>> = listOf(
         println { "256 colors".color256(208) + " and " + "true color".rgb(95, 135, 255).bold }
         println { " on a background ".black.rgb(255, 215, 95).bg }
     },
+    "gradient" to {
+        println { "Hello from Colored Console!".gradient(rgb(255, 95, 135), rgb(95, 175, 255)).bold }
+        println { "  as a background gradient  ".black.gradient(rgb(95, 215, 175), rgb(175, 135, 255)).bg }
+    },
     "custom-style" to {
         val header = style { green + underline + bold }
 
