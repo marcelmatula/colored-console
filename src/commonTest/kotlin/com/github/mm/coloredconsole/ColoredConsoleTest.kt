@@ -120,7 +120,7 @@ class TestANSI {
         colored(enabled = false) {
             listOf(bold, faint, italic, underline, blink, reverse, hidden, strike,
                    black, red, green, yellow, blue, purple, magenta, cyan, white, gray,
-                   rgb(1, 2, 3), color256(208)).forEach {
+                   rgb(1, 2, 3), color256(208), gradient(red, blue)).forEach {
                 assertEquals("x", "x".style(it))
                 assertEquals("x", "x"(it + bold))
                 assertEquals("x", "x"(bold + it))
@@ -146,6 +146,8 @@ class TestANSI {
             assertEquals("x", "x".color256(208).bg)
             assertEquals("x", "x".magenta { true })
             assertEquals("x", gray("x"))
+            assertEquals("ab", "ab".gradient(red, blue))
+            assertEquals("ab", "ab".gradient(rgb(1, 2, 3), cyan).bg)
         }
     }
 
@@ -239,6 +241,54 @@ class TestANSI {
         assertEquals("ab", "a\u001B[2Kb".stripAnsi())
         assertEquals("plain", "plain".stripAnsi())
         assertEquals(5, "plain".visibleLength)
+    }
+    @Test
+    fun gradientColorsEveryCharacter() {
+        val from = style { rgb(255, 0, 0) }
+        val to = style { rgb(0, 0, 255) }
+        colored {
+            // every visible character is its own segment, so .bg and outer styles reach all of them
+            assertEquals("${esc("38;2;255;0;0")}a${esc(0)}${esc("38;2;128;0;128")}b${esc(0)}${esc("38;2;0;0;255")}c${esc(0)}",
+                    "abc".gradient(from, to))
+            assertEquals("${esc("38;2;255;0;0")}a${esc(0)}", "a".gradient(from, to))
+            assertEquals("", "".gradient(from, to))
+
+            // named colors use the standard xterm values; color256 uses the xterm palette
+            assertEquals("${esc("38;2;205;0;0")}a${esc(0)}${esc("38;2;0;0;238")}b${esc(0)}", "ab".gradient(red, blue))
+            assertEquals("${esc("38;2;255;0;0")}a${esc(0)}", "a".gradient(color256(196), gray))
+
+            // inner styles are re-applied after the gradient code, so they still win
+            assertEquals("${esc("38;2;255;0;0")}a${esc(0)}${esc("38;2;0;0;255")}${esc(1)}b${esc(0)}",
+                    ("a" + "b".bold).gradient(from, to))
+            assertEquals("${esc("38;2;255;0;0")}a${esc(0)}${esc("38;2;0;0;255")}${esc(32)}b${esc(0)}",
+                    ("a" + "b".green).gradient(from, to))
+
+            // a surrogate pair (emoji) stays one character
+            assertEquals("${esc("38;2;255;0;0")}\uD83D\uDE00${esc(0)}${esc("38;2;0;0;255")}x${esc(0)}",
+                    "\uD83D\uDE00x".gradient(from, to))
+
+            val text = ("Hello " + "World".bold).gradient(from, to)
+            assertEquals("Hello World", text.stripAnsi())
+            assertEquals(11, text.visibleLength)
+        }
+    }
+
+    @Test
+    fun gradientWorksLikeAColor() {
+        val from = style { rgb(255, 0, 0) }
+        val to = style { rgb(0, 0, 255) }
+        colored {
+            assertEquals("${esc("48;2;255;0;0")}a${esc(0)}${esc("48;2;0;0;255")}b${esc(0)}", "ab".gradient(from, to).bg)
+            assertEquals("ab".gradient(from, to).bg, "ab"(gradient(from, to).bg))
+            assertEquals("ab".gradient(from, to).bold, "ab"(gradient(from, to) + bold))
+            assertEquals("ab"(bold + gradient(from, to)), "ab"(bold.gradient(from, to)))
+            // a gradient is the most recent color: .bright stops at it instead of brightening red
+            assertEquals("ab"(red + gradient(from, to)), "ab"((red + gradient(from, to)).bright))
+            assertEquals("ab".red.gradient(from, to), "ab".red.gradient(from, to).bright)
+        }
+        assertFailsWith<IllegalArgumentException> { colored { gradient(bold, red) } }
+        assertFailsWith<IllegalArgumentException> { colored { gradient(red, blue.bg) } }
+        assertFailsWith<IllegalArgumentException> { colored { gradient(red + bold, blue) } }
     }
 }
 

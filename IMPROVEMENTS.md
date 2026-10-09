@@ -20,6 +20,7 @@ Ideas for improving Colored Console, roughly in order of value within each secti
 - [x] **256-color and true-color support:** `"x".rgb(255, 135, 0)` and `"x".color256(208)`, also as styles (`rgb(…) + bold`) and with `.bg`.
 - [x] **More color names:** `magenta` (the same as `purple`) and `gray` (bright black).
 - [x] **`stripAnsi()` and `visibleLength`:** remove escape codes, or measure only the visible characters, for example to align styled text in a table.
+- [x] **Two-color gradients:** `"text".gradient(from, to)`, also as a style and with `.bg` for a background gradient.
 
 ## Tests and documentation
 

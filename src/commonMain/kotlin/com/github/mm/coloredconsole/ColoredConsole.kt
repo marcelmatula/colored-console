@@ -49,6 +49,9 @@ interface ColoredConsole {
             is NotApplied -> null
             is Simple -> if (code.isColor) Simple(change(listOf(code)).single()) else null
             is Extended -> if (codes.isColor) Extended(change(codes)) else null
+            // A gradient counts as a color: .bg turns it into a background gradient, .bright leaves it alone.
+            is Gradient -> copy(background = background ||
+                    change(listOf(EXTENDED_FOREGROUND, TRUE_COLOR, 0, 0, 0)).first() == EXTENDED_BACKGROUND)
             is Composite -> parent.changeLatestColor(change)?.let { copy(parent = it) }
                     ?: child.changeLatestColor(change)?.let { copy(child = it) }
         }
@@ -66,6 +69,11 @@ interface ColoredConsole {
         // One escape code with several parameters: 38;5;n (256 colors) or 38;2;r;g;b (true color), 48 for backgrounds.
         data class Extended(val codes: List<Int>) : Style() {
             override fun wrap(text: String) = text.applyTags(ansi(codes))
+        }
+
+        // A color that changes from one 0xRRGGBB value to another across the visible characters of the text.
+        data class Gradient(val from: Int, val to: Int, val background: Boolean = false) : Style() {
+            override fun wrap(text: String) = text.applyGradient(from, to, background)
         }
 
         data class Composite(val parent: Style, val child: Style) : Style() {
@@ -218,6 +226,13 @@ interface ColoredConsole {
     fun <N> N.color256(index: Int) = style(this@ColoredConsole.color256(index))
     // endregion
 
+    // region gradient
+    // from and to are text colors: named colors (as standard xterm values), rgb(…) or color256(…).
+    fun gradient(from: Style, to: Style): Style = Style.Gradient(from.rgbValue, to.rgbValue)
+    fun <N : Style> N.gradient(from: Style, to: Style): Style = this + this@ColoredConsole.gradient(from, to)
+    fun <N> N.gradient(from: Style, to: Style) = style(this@ColoredConsole.gradient(from, to))
+    // endregion
+
     companion object {
         const val RESET = 0
 
@@ -321,6 +336,82 @@ private fun String.changeLatestColor(change: (List<Int>) -> List<Int>) = split(r
 
 // Any ANSI control sequence (ESC [ parameters intermediates final), not only colors and styles.
 private val escapeSequence = Regex("\u001B\\[[0-?]*[ -/]*[@-~]")
+
+// The standard xterm values of the 16 named colors; terminal themes may use different ones.
+private val xtermColors = intArrayOf(
+        0x000000, 0xCD0000, 0x00CD00, 0xCDCD00, 0x0000EE, 0xCD00CD, 0x00CDCD, 0xE5E5E5,
+        0x7F7F7F, 0xFF0000, 0x00FF00, 0xFFFF00, 0x5C5CFF, 0xFF00FF, 0x00FFFF, 0xFFFFFF)
+
+// The xterm 256-color palette: the 16 named colors, a 6x6x6 color cube, then 24 grays.
+private fun xterm256(index: Int): Int = when (index) {
+    in 0..15 -> xtermColors[index]
+    in 16..231 -> (index - 16).let { cube ->
+        listOf(cube / 36, cube / 6 % 6, cube % 6).fold(0) { rgb, step -> rgb shl 8 or (if (step == 0) 0 else 55 + step * 40) }
+    }
+    else -> (8 + (index - 232) * 10).let { gray -> gray shl 16 or (gray shl 8) or gray }
+}
+
+// The 0xRRGGBB value of a text color, for gradients.
+private val Style.rgbValue: Int get() {
+    val codes = when (this) {
+        is Style.Simple -> listOf(code)
+        is Style.Extended -> codes
+        else -> emptyList()
+    }
+    return when {
+        codes.size == 1 && codes[0] in BLACK..WHITE -> xtermColors[codes[0] - BLACK]
+        codes.size == 1 && codes[0] in BRIGHT_BLACK..BRIGHT_WHITE -> xtermColors[codes[0] - BRIGHT_BLACK + 8]
+        codes.size == 3 && codes[0] == EXTENDED_FOREGROUND && codes[1] == PALETTE_256 -> xterm256(codes[2])
+        codes.size == 5 && codes[0] == EXTENDED_FOREGROUND && codes[1] == TRUE_COLOR ->
+            codes[2] shl 16 or (codes[3] shl 8) or codes[4]
+        else -> throw IllegalArgumentException(
+                "A gradient needs text colors such as red, rgb(…) or color256(…), not $this; use .bg on the result for a background")
+    }
+}
+
+// Calls onCode for each escape code and onCharacter for each visible character (a surrogate pair stays one).
+private fun String.forEachToken(onCode: (String) -> Unit, onCharacter: (String) -> Unit) {
+    var position = 0
+    fun charactersUntil(end: Int) {
+        while (position < end) {
+            val pair = this[position].isHighSurrogate() && position + 1 < end && this[position + 1].isLowSurrogate()
+            val next = position + if (pair) 2 else 1
+            onCharacter(substring(position, next))
+            position = next
+        }
+    }
+    for (match in escapeSequence.findAll(this)) {
+        charactersUntil(match.range.first)
+        onCode(match.value)
+        position = match.range.last + 1
+    }
+    charactersUntil(length)
+}
+
+// Every visible character becomes its own segment: the gradient color, then the codes of the inner styles
+// before it (so they still win), the character and a reset. Like applyTags, this lets .bg and outer styles
+// reach every character.
+private fun String.applyGradient(from: Int, to: Int, background: Boolean): String {
+    val segments = split(reset).filter { it.isNotEmpty() }
+    var count = 0
+    segments.forEach { it.forEachToken(onCode = {}, onCharacter = { count++ }) }
+    var index = 0
+    return buildString {
+        for (segment in segments) {
+            val innerCodes = StringBuilder()
+            segment.forEachToken(onCode = { innerCodes.append(it) }, onCharacter = { character ->
+                val color = listOf(16, 8, 0).map { shift -> mix(from shr shift and 0xFF, to shr shift and 0xFF, index, count) }
+                append(ansi(listOf(if (background) EXTENDED_BACKGROUND else EXTENDED_FOREGROUND, TRUE_COLOR) + color))
+                append(innerCodes).append(character).append(reset)
+                index++
+            })
+        }
+    }
+}
+
+// Step [index] of [count] evenly spaced steps from [from] to [to], rounded to the nearest integer.
+private fun mix(from: Int, to: Int, index: Int, count: Int) =
+        if (count <= 1) from else (from * (count - 1 - index) + to * index + (count - 1) / 2) / (count - 1)
 
 /** This text without ANSI escape codes, for example to write styled text to a log file. */
 fun String.stripAnsi() = replace(escapeSequence, "")

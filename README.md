@@ -14,6 +14,7 @@ A small Kotlin DSL for printing colored and styled text to the terminal using AN
 - **Text styles:** `bold`, `faint`, `italic`, `underline`, `strike`, `blink`, `reverse`, `hidden`
 - **Colors:** `black`, `red`, `green`, `yellow`, `blue`, `purple` (also `magenta`), `cyan`, `white`, and `gray`
 - Bright and background colors, plus 256-color and true-color (RGB) support
+- Two-color gradients
 - Reusable custom styles
 - Conditional and nested styling
 - Styling can be switched off with a single flag
@@ -102,6 +103,17 @@ println { " on a background ".black.rgb(255, 215, 95).bg }
 ```
 
 ![Output: "256 colors" in orange and "true color" in bold light blue, then black text on a yellow background](.images/extended-colors.svg)
+
+### Gradients
+
+`gradient(from, to)` blends the text color from one color to another across the visible characters. The two colors can be `rgb(…)`, `color256(…)` or named colors; named colors use the standard xterm values, which can differ from your terminal's theme. A gradient works like any color: as a style (`gradient(…) + bold`) and with `.bg` for a background gradient. It needs a terminal with true-color support.
+
+```kotlin
+println { "Hello from Colored Console!".gradient(rgb(255, 95, 135), rgb(95, 175, 255)).bold }
+println { "  as a background gradient  ".black.gradient(rgb(95, 215, 175), rgb(175, 135, 255)).bg }
+```
+
+![Output: "Hello from Colored Console!" in bold, blending from pink to light blue, then black text on a background blending from green to purple](.images/gradient.svg)
 
 ### Custom styles
 
