@@ -21,7 +21,9 @@ Gradle 9.8 wrapper, Kotlin 2.4 (version in `gradle/libs.versions.toml`), and `jv
 ./gradlew jvmTest --rerun -i
 ```
 
-`TestANSI.mainTest` has **no assertions**. It prints the README examples, so it only catches compile errors and exceptions; apart from `disabledStylesEmitNoCodes`, the escape sequences have to be checked by eye (`-i` output, or `<system-out>` in `build/test-results/jvmTest/*.xml`, where ESC shows as `?`). The test and the README examples mirror each other; keep them in sync when the API changes.
+`TestANSI.mainTest` has **no assertions**. It prints the README examples, so it only catches compile errors and exceptions; apart from `disabledStylesEmitNoCodes`, the escape sequences have to be checked by eye (`-i` output, or `<system-out>` in `build/test-results/jvmTest/*.xml`, where ESC shows as `?`).
+
+The README images (`.images/*.svg`) are generated, not screenshots: `src/jvmTest/kotlin/readme/ReadmeImages.kt` holds verbatim copies of the README snippets (in package `readme`, with only the imports the README lists, so `check` also proves the documented imports compile), captures what each prints, and renders the ANSI codes as a terminal-window SVG. When you change a README example, change its copy there too and run `./gradlew readmeImages`; the output is deterministic, so unchanged examples leave the SVGs untouched. Two rendering rules matter: spaces are written as no-break spaces (browsers collapse edge spaces in SVG text), and every run gets an explicit `x` and `textLength` on a 9px grid so backgrounds line up whatever monospace font the viewer has.
 
 ## Architecture (`ColoredConsole.kt`)
 

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="162" viewBox="0 0 720 162" role="img">
+<title>color       black   red     green   yellow  blue    purple  cyan    white   
+.bright     black   red     green   yellow  blue    purple  cyan    white   
+.bg          black   red     green   yellow  blue    purple  cyan    white  
+.bright.bg   black   red     green   yellow  blue    purple  cyan    white  
+styles      bold  faint  italic  underline  strike  reverse</title>
+<rect x="0.5" y="0.5" width="719" height="161" rx="8" fill="#282c34" stroke="#3e4451"/>
+<circle cx="20" cy="19" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="19" r="6" fill="#febc2e"/>
+<circle cx="60" cy="19" r="6" fill="#28c840"/>
+<g font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="15">
+<g opacity="0.6"><text x="18" y="54" textLength="108" lengthAdjust="spacing" fill="#abb2bf">color       </text>
+</g>
+<text x="126" y="54" textLength="45" lengthAdjust="spacing" fill="#3f4451">black</text>
+<text x="198" y="54" textLength="27" lengthAdjust="spacing" fill="#e06c75">red</text>
+<text x="270" y="54" textLength="45" lengthAdjust="spacing" fill="#98c379">green</text>
+<text x="342" y="54" textLength="54" lengthAdjust="spacing" fill="#e5c07b">yellow</text>
+<text x="414" y="54" textLength="36" lengthAdjust="spacing" fill="#61afef">blue</text>
+<text x="486" y="54" textLength="54" lengthAdjust="spacing" fill="#c678dd">purple</text>
+<text x="558" y="54" textLength="36" lengthAdjust="spacing" fill="#56b6c2">cyan</text>
+<text x="630" y="54" textLength="45" lengthAdjust="spacing" fill="#d0d4dc">white</text>
+<g opacity="0.6"><text x="18" y="76" textLength="108" lengthAdjust="spacing" fill="#abb2bf">.bright     </text>
+</g>
+<text x="126" y="76" textLength="45" lengthAdjust="spacing" fill="#7f848e">black</text>
+<text x="198" y="76" textLength="27" lengthAdjust="spacing" fill="#ff7b86">red</text>
+<text x="270" y="76" textLength="45" lengthAdjust="spacing" fill="#b5e48c">green</text>
+<text x="342" y="76" textLength="54" lengthAdjust="spacing" fill="#ffd98e">yellow</text>
+<text x="414" y="76" textLength="36" lengthAdjust="spacing" fill="#8dc6ff">blue</text>
+<text x="486" y="76" textLength="54" lengthAdjust="spacing" fill="#de9bf2">purple</text>
+<text x="558" y="76" textLength="36" lengthAdjust="spacing" fill="#7fdbe8">cyan</text>
+<text x="630" y="76" textLength="45" lengthAdjust="spacing" fill="#ffffff">white</text>
+<g opacity="0.6"><text x="18" y="98" textLength="108" lengthAdjust="spacing" fill="#abb2bf">.bg         </text>
+</g>
+<rect x="126" y="82" width="72" height="22" fill="#3f4451"/>
+<text x="126" y="98" textLength="72" lengthAdjust="spacing" fill="#ffffff"> black  </text>
+<rect x="198" y="82" width="72" height="22" fill="#e06c75"/>
+<text x="198" y="98" textLength="72" lengthAdjust="spacing" fill="#3f4451"> red    </text>
+<rect x="270" y="82" width="72" height="22" fill="#98c379"/>
+<text x="270" y="98" textLength="72" lengthAdjust="spacing" fill="#3f4451"> green  </text>
+<rect x="342" y="82" width="72" height="22" fill="#e5c07b"/>
+<text x="342" y="98" textLength="72" lengthAdjust="spacing" fill="#3f4451"> yellow </text>
+<rect x="414" y="82" width="72" height="22" fill="#61afef"/>
+<text x="414" y="98" textLength="72" lengthAdjust="spacing" fill="#3f4451"> blue   </text>
+<rect x="486" y="82" width="72" height="22" fill="#c678dd"/>
+<text x="486" y="98" textLength="72" lengthAdjust="spacing" fill="#3f4451"> purple </text>
+<rect x="558" y="82" width="72" height="22" fill="#56b6c2"/>
+<text x="558" y="98" textLength="72" lengthAdjust="spacing" fill="#3f4451"> cyan   </text>
+<rect x="630" y="82" width="72" height="22" fill="#d0d4dc"/>
+<text x="630" y="98" textLength="72" lengthAdjust="spacing" fill="#3f4451"> white  </text>
+<g opacity="0.6"><text x="18" y="120" textLength="108" lengthAdjust="spacing" fill="#abb2bf">.bright.bg  </text>
+</g>
+<rect x="126" y="104" width="72" height="22" fill="#7f848e"/>
+<text x="126" y="120" textLength="72" lengthAdjust="spacing" fill="#ffffff"> black  </text>
+<rect x="198" y="104" width="72" height="22" fill="#ff7b86"/>
+<text x="198" y="120" textLength="72" lengthAdjust="spacing" fill="#3f4451"> red    </text>
+<rect x="270" y="104" width="72" height="22" fill="#b5e48c"/>
+<text x="270" y="120" textLength="72" lengthAdjust="spacing" fill="#3f4451"> green  </text>
+<rect x="342" y="104" width="72" height="22" fill="#ffd98e"/>
+<text x="342" y="120" textLength="72" lengthAdjust="spacing" fill="#3f4451"> yellow </text>
+<rect x="414" y="104" width="72" height="22" fill="#8dc6ff"/>
+<text x="414" y="120" textLength="72" lengthAdjust="spacing" fill="#3f4451"> blue   </text>
+<rect x="486" y="104" width="72" height="22" fill="#de9bf2"/>
+<text x="486" y="120" textLength="72" lengthAdjust="spacing" fill="#3f4451"> purple </text>
+<rect x="558" y="104" width="72" height="22" fill="#7fdbe8"/>
+<text x="558" y="120" textLength="72" lengthAdjust="spacing" fill="#3f4451"> cyan   </text>
+<rect x="630" y="104" width="72" height="22" fill="#ffffff"/>
+<text x="630" y="120" textLength="72" lengthAdjust="spacing" fill="#3f4451"> white  </text>
+<g opacity="0.6"><text x="18" y="142" textLength="108" lengthAdjust="spacing" fill="#abb2bf">styles      </text>
+</g>
+<text x="126" y="142" textLength="36" lengthAdjust="spacing" fill="#abb2bf" font-weight="bold">bold</text>
+<g opacity="0.6"><text x="180" y="142" textLength="45" lengthAdjust="spacing" fill="#abb2bf">faint</text>
+</g>
+<text x="243" y="142" textLength="54" lengthAdjust="spacing" fill="#abb2bf" font-style="italic">italic</text>
+<text x="315" y="142" textLength="81" lengthAdjust="spacing" fill="#abb2bf">underline</text>
+<line x1="315" y1="145.5" x2="396" y2="145.5" stroke="#abb2bf"/>
+<text x="414" y="142" textLength="54" lengthAdjust="spacing" fill="#abb2bf">strike</text>
+<line x1="414" y1="137.5" x2="468" y2="137.5" stroke="#abb2bf"/>
+<rect x="486" y="126" width="63" height="22" fill="#abb2bf"/>
+<text x="486" y="142" textLength="63" lengthAdjust="spacing" fill="#282c34">reverse</text>
+</g>
+</svg>
