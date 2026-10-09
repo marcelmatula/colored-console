@@ -17,9 +17,9 @@ Ideas for improving Colored Console, roughly in order of value within each secti
 
 ## Features
 
-- [ ] **256-color and true-color support**, for example `"x".rgb(255, 128, 0)` and `"x".color256(208)` (SGR codes `38;5;n` and `38;2;r;g;b`, plus their background variants).
-- [ ] **More color names:** `magenta` as an alias for `purple`, and `gray` for bright black.
-- [ ] **`stripAnsi()` and visible length.** Padding a colored string to align a table counts its escape codes, so columns come out misaligned. Helpers that remove the codes or measure only the visible text would fix this.
+- [x] **256-color and true-color support:** `"x".rgb(255, 135, 0)` and `"x".color256(208)`, also as styles (`rgb(…) + bold`) and with `.bg`.
+- [x] **More color names:** `magenta` (the same as `purple`) and `gray` (bright black).
+- [x] **`stripAnsi()` and `visibleLength`:** remove escape codes, or measure only the visible characters, for example to align styled text in a table.
 
 ## Tests and documentation
 
