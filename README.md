@@ -20,7 +20,7 @@ The output relies on ANSI escape codes, so it needs a terminal that supports the
 
 ## Installation
 
-The library is a single file. Copy [`ColoredConsole.kt`](src/commonMain/kotlin/com/github/mm/coloredconsole/ColoredConsole.kt) into your project.
+The library is a single file. Copy [`ColoredConsole.kt`](src/commonMain/kotlin/com/github/mm/coloredconsole/ColoredConsole.kt) into your project. Keep the license notice at the top of the file; the MIT License requires it in every copy.
 
 When you use it from another package, import the functions you need:
 
@@ -195,3 +195,7 @@ The images in this README are generated from the real output of the examples. Af
 ```sh
 ./gradlew readmeImages
 ```
+
+## License
+
+Colored Console is licensed under the [MIT License](LICENSE).

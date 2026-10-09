@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A tiny Kotlin DSL for ANSI-colored console output (Kotlin Multiplatform, only a `jvm()` target configured). The whole library is one file, `src/commonMain/kotlin/com/github/mm/coloredconsole/ColoredConsole.kt`, and the README tells users to **copy that single file into their project**. Keep it self-contained: no dependencies, no extra source files, and no `java.*` / platform APIs (it lives in `commonMain`).
+A tiny Kotlin DSL for ANSI-colored console output (Kotlin Multiplatform, only a `jvm()` target configured). The whole library is one file, `src/commonMain/kotlin/com/github/mm/coloredconsole/ColoredConsole.kt`, and the README tells users to **copy that single file into their project**. Keep it self-contained: no dependencies, no extra source files, and no `java.*` / platform APIs (it lives in `commonMain`). Its header carries the full MIT notice, copied from `LICENSE`, because copies of the file don't include `LICENSE`; keep the two in sync (e.g. the copyright years).
 
 ## Build and test
 
