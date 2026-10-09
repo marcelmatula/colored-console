@@ -7,11 +7,9 @@ repositories {
 }
 
 kotlin {
+    jvmToolchain(25)
     jvm()
     sourceSets {
-//        commonTest.dependencies {
-//            implementation("kotlin.test")
-//        }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
