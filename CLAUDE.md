@@ -8,7 +8,7 @@ A tiny Kotlin DSL for ANSI-colored console output (Kotlin Multiplatform, only a 
 
 ## Build and test
 
-Gradle 9.8 wrapper, Kotlin 2.4 (version in `gradle/libs.versions.toml`), and `jvmToolchain(25)`: compiles to Java 25 bytecode, and the foojay resolver in `settings.gradle.kts` downloads JDK 25 if it isn't installed. The configuration cache is on (`gradle.properties`).
+Gradle 9.8 wrapper, Kotlin 2.4 (version in `gradle/libs.versions.toml`), and `jvmToolchain(25)`: compiles to Java 25 bytecode, and the foojay resolver in `settings.gradle.kts` downloads JDK 25 if it isn't installed. The configuration cache is on (`gradle.properties`). CI (`.github/workflows/ci.yml`) runs `./gradlew check` on pull requests and pushes to `master`; `IMPROVEMENTS.md` tracks planned work.
 
 ```sh
 ./gradlew check          # compile + all tests
