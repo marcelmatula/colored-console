@@ -8,22 +8,20 @@ A tiny Kotlin DSL for ANSI-colored console output (Kotlin Multiplatform, only a 
 
 ## Build and test
 
-Gradle 9.8 wrapper, Kotlin 2.4 (version in `gradle/libs.versions.toml`), and `jvmToolchain(25)`: compiles to Java 25 bytecode, and the foojay resolver in `settings.gradle.kts` downloads JDK 25 if it isn't installed. The configuration cache is on (`gradle.properties`). CI (`.github/workflows/ci.yml`) runs `./gradlew check` on pull requests and pushes to `master`; `IMPROVEMENTS.md` tracks planned work.
+Gradle 9.8 wrapper, Kotlin 2.4 (version in `gradle/libs.versions.toml`), and `jvmToolchain(25)`: compiles to Java 25 bytecode, and the foojay resolver in `settings.gradle.kts` downloads JDK 25 if it isn't installed. The configuration cache is on (`gradle.properties`). CI (`.github/workflows/ci.yml`) runs `./gradlew check` on Linux and Windows for pull requests and pushes to `master`, and on Linux also fails if `./gradlew readmeImages` changes or adds anything in `.images/`; `IMPROVEMENTS.md` tracks planned work.
 
 ```sh
 ./gradlew check          # compile + all tests
 ./gradlew jvmTest        # tests only
 
-# single test: the class is TestANSI (the file is ColoredConsoleTest.kt)
-./gradlew jvmTest --tests 'com.github.mm.coloredconsole.TestANSI.mainTest'
-
-# also show the raw colored output the test prints (-i), even if the task is up to date (--rerun)
-./gradlew jvmTest --rerun -i
+# single test: the unit tests are class TestANSI (the file is ColoredConsoleTest.kt)
+./gradlew jvmTest --tests 'com.github.mm.coloredconsole.TestANSI.gradientColorsEveryCharacter'
+./gradlew jvmTest --tests 'readme.ReadmeExamplesTest'
 ```
 
-`TestANSI.mainTest` has **no assertions**. It prints the README examples, so it only catches compile errors and exceptions; apart from `disabledStylesEmitNoCodes`, the escape sequences have to be checked by eye (`-i` output, or `<system-out>` in `build/test-results/jvmTest/*.xml`, where ESC shows as `?`).
+`TestANSI` (commonTest) holds the unit tests. `src/jvmTest/kotlin/readme/ReadmeExamplesTest.kt` captures what each README example in `ReadmeImages.kt` prints and compares it with an expected string, written with `\e` for ESC in raw strings (`"""\e[1mx\e[0m"""`); captured output goes through the same `\e` replacement, so failures are readable. Every example except `palette` needs an entry (`everyExampleHasAnExpectedOutput`). The gradient's expected codes are computed by a separate linear interpolation in the test, not copied from the library.
 
-The README images (`.images/*.svg`) are generated, not screenshots: `src/jvmTest/kotlin/readme/ReadmeImages.kt` holds verbatim copies of the README snippets (in package `readme`, with only the imports the README lists, so `check` also proves the documented imports compile), captures what each prints, and renders the ANSI codes as a terminal-window SVG (including 256-color and RGB codes, using the xterm palette for 16-255). When you change a README example, change its copy there too and run `./gradlew readmeImages`; the output is deterministic, so unchanged examples leave the SVGs untouched. Two rendering rules matter: spaces are written as no-break spaces (browsers collapse edge spaces in SVG text), and every run gets an explicit `x` and `textLength` on a 9px grid so backgrounds line up whatever monospace font the viewer has.
+The README images (`.images/*.svg`) are generated, not screenshots: `src/jvmTest/kotlin/readme/ReadmeImages.kt` holds verbatim copies of the README snippets (in package `readme`, with only the imports the README lists, so `check` also proves the documented imports compile), captures what each prints, and renders the ANSI codes as a terminal-window SVG (including 256-color and RGB codes, using the xterm palette for 16-255). When you change a README example, change its copy there and its expected output in `ReadmeExamplesTest.kt` too, and run `./gradlew readmeImages`; the output is deterministic, so unchanged examples leave the SVGs untouched, and CI fails when a committed SVG is stale. A README snippet whose output depends on the environment (the `NO_COLOR` / terminal check) is copied into `ReadmeImages.kt` as a function outside `examples`: compiled, but neither rendered nor asserted. Two rendering rules matter: spaces are written as no-break spaces (browsers collapse edge spaces in SVG text), and every run gets an explicit `x` and `textLength` on a 9px grid so backgrounds line up whatever monospace font the viewer has.
 
 ## Architecture (`ColoredConsole.kt`)
 

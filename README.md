@@ -23,7 +23,7 @@ A small Kotlin DSL for printing colored and styled text to the terminal using AN
 
 ## Requirements
 
-The output relies on ANSI escape codes, so it needs a terminal that supports them. Linux and macOS terminals work; Windows is not supported.
+The output relies on ANSI escape codes, so it needs a terminal that supports them. Linux and macOS terminals work. Windows has not been tested yet: Windows 10 and later understand ANSI escape codes, but the console interprets them only when [virtual terminal processing](https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences) is turned on for it.
 
 ## Installation
 
@@ -196,6 +196,18 @@ colored(enabled = false) {
 
 ![Output: "Orange Is the New Black" as plain text](.images/styling-off.svg)
 
+The library does not decide this by itself: checking the environment is platform-specific, and the library is a single file of common Kotlin code. To turn styling off automatically, compute the flag in your program. For example, on the JVM, style the output only when the program runs in a terminal, not when its input or output is redirected (to a pipe or a file), and never when the [`NO_COLOR`](https://no-color.org) environment variable is set to a non-empty value:
+
+```kotlin
+val useColors = System.console()?.isTerminal == true && System.getenv("NO_COLOR").isNullOrEmpty()
+
+colored(enabled = useColors) {
+    println("Orange".yellow.bold + " Is the New " + "Black".bold.reverse)
+}
+```
+
+`Console.isTerminal()` needs Java 22 or later. On older versions, check `System.console() != null` instead.
+
 ### Styling inside a class
 
 A class that implements `ColoredConsole` can use colors and styles in all of its methods, without a `colored { }` block:
@@ -246,11 +258,13 @@ Build the project and run the tests with:
 
 The build uses a Java 25 toolchain, which Gradle downloads if it is not installed.
 
-The images in this README are generated from the real output of the examples. After changing an example (in this README and in [`ReadmeImages.kt`](src/jvmTest/kotlin/readme/ReadmeImages.kt)), regenerate them with:
+The images in this README are generated from the real output of the examples, and the tests compare that output with the expected escape codes. After changing an example (in this README and in [`ReadmeImages.kt`](src/jvmTest/kotlin/readme/ReadmeImages.kt)), update its expected output in [`ReadmeExamplesTest.kt`](src/jvmTest/kotlin/readme/ReadmeExamplesTest.kt) and regenerate the images with:
 
 ```sh
 ./gradlew readmeImages
 ```
+
+CI fails when an image is out of date.
 
 ## License
 

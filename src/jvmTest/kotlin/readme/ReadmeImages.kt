@@ -19,7 +19,7 @@ class Weather(val degrees: Int) : ColoredConsole {
     fun display() = println("Degrees:".blue.bold + " $degrees".italic.bold)
 }
 
-private val examples: List<Pair<String, () -> Unit>> = listOf(
+internal val examples: List<Pair<String, () -> Unit>> = listOf(
     "palette" to { palette() },
     "usage" to {
         println { "Hello world".cyan.bold }
@@ -103,6 +103,17 @@ private val examples: List<Pair<String, () -> Unit>> = listOf(
     },
 )
 
+// The README example that turns styling off automatically. It is only compiled, not rendered or tested,
+// because what it prints depends on the environment.
+@Suppress("unused")
+private fun automaticStyling() {
+    val useColors = System.console()?.isTerminal == true && System.getenv("NO_COLOR").isNullOrEmpty()
+
+    colored(enabled = useColors) {
+        println("Orange".yellow.bold + " Is the New " + "Black".bold.reverse)
+    }
+}
+
 // The overview image at the top of the README: every color and style.
 private fun palette() = colored {
     val names = listOf("black", "red", "green", "yellow", "blue", "purple", "cyan", "white")
@@ -129,7 +140,7 @@ fun main(args: Array<String>) {
     }
 }
 
-private fun capture(example: () -> Unit): String {
+internal fun capture(example: () -> Unit): String {
     val buffer = ByteArrayOutputStream()
     val out = System.out
     System.setOut(PrintStream(buffer, true, Charsets.UTF_8))
