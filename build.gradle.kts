@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockStoreTask
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -30,6 +31,15 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+    }
+}
+
+// kotlinWasmStoreYarnLock takes build/wasm/yarn.lock as input, but the Wasm tests have no npm dependencies, and yarn on
+// Windows then writes no lock file, so Gradle fails the task on the missing input. With nothing to store, skip it.
+tasks.withType<YarnLockStoreTask>().configureEach {
+    if (name == "kotlinWasmStoreYarnLock") {
+        val lock = inputFile
+        onlyIf("yarn wrote the Wasm lock file") { lock.get().asFile.exists() }
     }
 }
 
