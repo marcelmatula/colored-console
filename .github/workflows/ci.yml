@@ -14,7 +14,15 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Windows builds and runs the tests; it cannot show whether a Windows terminal renders the colors.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v7
 
@@ -27,3 +35,16 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
 
       - run: ./gradlew check
+
+      # The images are generated from the README examples and the generator is deterministic, so any change
+      # (or new file) in .images/ means an example's output changed without its image being regenerated.
+      - name: Check that the README images are up to date
+        if: runner.os == 'Linux'
+        run: |
+          ./gradlew readmeImages
+          if [ -n "$(git status --porcelain -- .images)" ]; then
+            git status --short -- .images
+            git diff -- .images
+            echo "::error::The README images are out of date. Run ./gradlew readmeImages and commit .images/."
+            exit 1
+          fi

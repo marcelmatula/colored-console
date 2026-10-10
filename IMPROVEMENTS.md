@@ -24,10 +24,10 @@ Ideas for improving Colored Console, roughly in order of value within each secti
 
 ## Tests and documentation
 
-- [ ] **Assert the output of the examples.** `TestANSI.mainTest` only prints the examples, so it catches compile errors and exceptions but not wrong output. Comparing the captured output with expected escape sequences would catch regressions.
-- [ ] **Fail CI when the README images are stale.** Run `./gradlew readmeImages` in CI and fail if anything in `.images/` changes. The generator is deterministic, so this only fails when an example's output really changed.
-- [ ] **Document turning colors off automatically**, for example when the output is not a terminal or the [`NO_COLOR`](https://no-color.org) environment variable is set. This belongs in the README rather than the library, because environment access is platform-specific and would break the single-file design.
-- [ ] **Verify Windows support.** The README says Windows is not supported, but current Windows terminals understand ANSI escape codes. Test it and update the README.
+- [x] **Assert the output of the examples.** [`ReadmeExamplesTest`](src/jvmTest/kotlin/readme/ReadmeExamplesTest.kt) captures what each README example prints and compares it with the expected escape codes, so wrong output fails the build. It replaces `TestANSI.mainTest`, which only printed older copies of the examples.
+- [x] **Fail CI when the README images are stale.** CI runs `./gradlew readmeImages` and fails if anything in `.images/` changes, including a new image that was not committed. The generator is deterministic, so this only fails when an example's output really changed.
+- [x] **Document turning colors off automatically.** The README shows how to turn styling off on the JVM when the output is not a terminal or the [`NO_COLOR`](https://no-color.org) environment variable is set. It stays out of the library, because environment access is platform-specific and would break the single-file design.
+- [ ] **Verify Windows support.** Current Windows terminals understand ANSI escape codes when virtual terminal processing is on. CI now also builds and tests on Windows, and the README says Windows is untested rather than unsupported. Still to do: run the examples in Windows Terminal and in the classic console (`cmd.exe`, PowerShell), then update the README.
 
 ## Larger steps
 
