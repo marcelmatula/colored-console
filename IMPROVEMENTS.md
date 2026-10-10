@@ -31,5 +31,5 @@ Ideas for improving Colored Console, roughly in order of value within each secti
 
 ## Larger steps
 
-- [ ] **Compile more Kotlin Multiplatform targets** (JS, Wasm, native). The library lives in common code, but only the JVM target is built, so compatibility with other platforms is untested.
+- [x] **Compile more Kotlin Multiplatform targets.** The build also targets JS, Wasm (`wasmJs` and `wasmWasi`, both tested on Node.js) and Kotlin/Native (`linuxX64`, `mingwX64`), and the common tests run on each of them. CI runs the native tests on Linux and Windows. Apple targets are left out: their test binaries need Xcode, and they use the same Kotlin/Native backend that `linuxX64` and `mingwX64` test.
 - [ ] **Publish to Maven Central or JitPack**, so the library can be added as a dependency instead of copied. The published jar would then need a lower JVM target than the Java 25 bytecode the build produces today.
