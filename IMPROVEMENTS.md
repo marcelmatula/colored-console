@@ -32,4 +32,4 @@ Ideas for improving Colored Console, roughly in order of value within each secti
 ## Larger steps
 
 - [x] **Compile more Kotlin Multiplatform targets.** The build also targets JS, Wasm (`wasmJs` and `wasmWasi`, both tested on Node.js) and Kotlin/Native (`linuxX64`, `mingwX64`), and the common tests run on each of them. CI runs the native tests on Linux and Windows. Apple targets are left out: their test binaries need Xcode, and they use the same Kotlin/Native backend that `linuxX64` and `mingwX64` test.
-- [ ] **Publish to Maven Central or JitPack**, so the library can be added as a dependency instead of copied. The published jar would then need a lower JVM target than the Java 25 bytecode the build produces today.
+- [ ] **Publish to Maven Central**, so the library can be added as a dependency instead of copied. The build and a release workflow are set up: `io.github.marcelmatula:colored-console`, every target, signed, with the JVM jar on Java 8 bytecode. Still to do: the Central Portal account, namespace and secrets, the first release, and the README's installation instructions once it is live.
