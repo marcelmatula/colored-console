@@ -1,0 +1,68 @@
+name: Publish
+
+# Publishing a GitHub release with a tag like v1.4.0 uploads that version to the Maven Central Portal. The upload is
+# not released automatically: review it under Deployments on https://central.sonatype.com and click Publish there.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    # No Apple targets, so one Linux runner builds every publication (mingwX64 is cross-compiled).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      # Pinned to a commit: its init scripts run inside the Gradle build that gets the signing key and Central token.
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      # The build signs only when a key is present, and an empty key ID or passphrase fails signing with an obscure
+      # error, so check for all five secrets here.
+      - name: Check the tag and the secrets
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          HAS_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME != '' }}
+          HAS_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD != '' }}
+          HAS_KEY: ${{ secrets.GPG_KEY_CONTENTS != '' }}
+          HAS_KEY_ID: ${{ secrets.SIGNING_KEY_ID != '' }}
+          HAS_KEY_PASSWORD: ${{ secrets.SIGNING_PASSWORD != '' }}
+        run: |
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::The release tag must look like v1.4.0, not '$TAG'."
+            exit 1
+          fi
+          missing=""
+          [ "$HAS_USERNAME" = true ] || missing="$missing MAVEN_CENTRAL_USERNAME"
+          [ "$HAS_PASSWORD" = true ] || missing="$missing MAVEN_CENTRAL_PASSWORD"
+          [ "$HAS_KEY" = true ] || missing="$missing GPG_KEY_CONTENTS"
+          [ "$HAS_KEY_ID" = true ] || missing="$missing SIGNING_KEY_ID"
+          [ "$HAS_KEY_PASSWORD" = true ] || missing="$missing SIGNING_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets:$missing"
+            exit 1
+          fi
+          echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"
+
+      - run: ./gradlew check
+
+      # The publishing plugin does not support the configuration cache.
+      - name: Upload to the Maven Central Portal
+        run: ./gradlew publishToMavenCentral --no-configuration-cache -PreleaseVersion="$VERSION"
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY_CONTENTS }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}

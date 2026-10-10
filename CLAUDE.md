@@ -27,6 +27,16 @@ Every target compiles `commonMain` and runs `commonTest`, which is what enforces
 
 The README images (`.images/*.svg`) are generated, not screenshots: `src/jvmTest/kotlin/readme/ReadmeImages.kt` holds verbatim copies of the README snippets (in package `readme`, with only the imports the README lists, so `check` also proves the documented imports compile), captures what each prints, and renders the ANSI codes as a terminal-window SVG (including 256-color and RGB codes, using the xterm palette for 16-255). When you change a README example, change its copy there and its expected output in `ReadmeExamplesTest.kt` too, and run `./gradlew readmeImages`; the output is deterministic, so unchanged examples leave the SVGs untouched, and CI fails when a committed SVG is stale. A README snippet whose output depends on the environment (the `NO_COLOR` / terminal check) is copied into `ReadmeImages.kt` as a function outside `examples`: compiled, but neither rendered nor asserted. Two rendering rules matter: spaces are written as no-break spaces (browsers collapse edge spaces in SVG text), and every run gets an explicit `x` and `textLength` on a 9px grid so backgrounds line up whatever monospace font the viewer has.
 
+## Publishing
+
+Maven Central coordinates: `io.github.marcelmatula:colored-console` (the `com.vanniktech.maven.publish` plugin; the package stays `com.github.mm.coloredconsole`). Published versions can never be deleted or changed.
+
+- **Releasing:** publishing a GitHub release with a tag like `v1.4.0` runs `.github/workflows/publish.yml`. It checks the tag and that the secrets exist, runs `check`, and uploads with `./gradlew publishToMavenCentral --no-configuration-cache -PreleaseVersion=1.4.0` (the plugin doesn't support the configuration cache). The upload is **not released**: it waits under Deployments on https://central.sonatype.com until someone clicks Publish there. `publishAndReleaseToMavenCentral` would release automatically. When creating the release, also attach `ColoredConsole.kt` by hand for people who copy the file; the workflow doesn't.
+- **Secrets:** `MAVEN_CENTRAL_USERNAME` / `MAVEN_CENTRAL_PASSWORD` (a Central Portal user token), `GPG_KEY_CONTENTS` (the armored secret key), `SIGNING_KEY_ID` (its last 8 hex digits) and `SIGNING_PASSWORD`. All five are required (an empty key ID or passphrase fails signing), and only the upload step gets their values.
+- **Signing** happens only when the `signingInMemoryKey` property is set, so a local `publishToMavenLocal` works unsigned; the workflow refuses to run without the key.
+- **Java 8:** the main JVM compilation targets Java 8 (`jvmTarget = 1.8`, `-Xjdk-release=1.8`, class files major version 52); jvmTest stays on Java 25. The published module metadata carries no Java-version attribute.
+- **Check a publication locally** without touching `~/.m2`: `./gradlew publishToMavenLocal --no-configuration-cache -Dmaven.repo.local=<dir> -PreleaseVersion=1.4.0`. Without `-PreleaseVersion` the version is `0.0.0-SNAPSHOT`.
+
 ## Architecture (`ColoredConsole.kt`)
 
 Everything is a member of the `ColoredConsole` interface, so it is only in scope inside a `ColoredConsole` receiver: `colored { }`, `style { }`, the top-level `print { }` / `println { }` lambda overloads, or a class that implements `ColoredConsole`.
