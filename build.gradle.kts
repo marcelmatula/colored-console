@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
 }
@@ -11,6 +13,19 @@ val jdkVersion = 25
 kotlin {
     jvmToolchain(jdkVersion)
     jvm()
+    js {
+        nodejs()
+    }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        nodejs()
+    }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmWasi {
+        nodejs()
+    }
+    linuxX64()
+    mingwX64()
     sourceSets {
         commonTest.dependencies {
             implementation(libs.kotlin.test)

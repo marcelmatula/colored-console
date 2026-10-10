@@ -4,20 +4,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A tiny Kotlin DSL for ANSI-colored console output (Kotlin Multiplatform, only a `jvm()` target configured). The whole library is one file, `src/commonMain/kotlin/com/github/mm/coloredconsole/ColoredConsole.kt`, and the README tells users to **copy that single file into their project**. Keep it self-contained: no dependencies, no extra source files, and no `java.*` / platform APIs (it lives in `commonMain`). Its header carries the full MIT notice, copied from `LICENSE`, because copies of the file don't include `LICENSE`; keep the two in sync (e.g. the copyright years).
+A tiny Kotlin DSL for ANSI-colored console output (Kotlin Multiplatform: `jvm`, `js`, `wasmJs`, `wasmWasi` and the native `linuxX64` and `mingwX64` targets; no Apple targets, because their test binaries need Xcode; `linuxX64` and `mingwX64` cover the same Kotlin/Native backend). The whole library is one file, `src/commonMain/kotlin/com/github/mm/coloredconsole/ColoredConsole.kt`, and the README tells users to **copy that single file into their project**. Keep it self-contained: no dependencies, no extra source files, and no `java.*` / platform APIs (it lives in `commonMain`). Its header carries the full MIT notice, copied from `LICENSE`, because copies of the file don't include `LICENSE`; keep the two in sync (e.g. the copyright years).
 
 ## Build and test
 
 Gradle 9.8 wrapper, Kotlin 2.4 (version in `gradle/libs.versions.toml`), and `jvmToolchain(25)`: compiles to Java 25 bytecode, and the foojay resolver in `settings.gradle.kts` downloads JDK 25 if it isn't installed. The configuration cache is on (`gradle.properties`). CI (`.github/workflows/ci.yml`) runs `./gradlew check` on Linux and Windows for pull requests and pushes to `master`, and on Linux also fails if `./gradlew readmeImages` changes or adds anything in `.images/`; `IMPROVEMENTS.md` tracks planned work.
 
 ```sh
-./gradlew check          # compile + all tests
-./gradlew jvmTest        # tests only
+./gradlew check          # compile + all tests this host can run
+./gradlew allTests       # tests only
+./gradlew jvmTest        # JVM tests only (fastest; the README tests are JVM-only)
+./gradlew jsTest wasmJsTest wasmWasiTest   # common tests on Node.js
 
 # single test: the unit tests are class TestANSI (the file is ColoredConsoleTest.kt)
 ./gradlew jvmTest --tests 'com.github.mm.coloredconsole.TestANSI.gradientColorsEveryCharacter'
 ./gradlew jvmTest --tests 'readme.ReadmeExamplesTest'
 ```
+
+Every target compiles `commonMain` and runs `commonTest`, which is what enforces the no-platform-API rule. Native tests run only on their own OS (`linuxX64Test` on Linux, `mingwX64Test` on Windows); on macOS they are compiled and linked but skipped, silently because of `kotlin.native.ignoreDisabledTargets=true` in `gradle.properties`. The first build downloads Node.js (into the Gradle cache) and the Kotlin/Native compiler and its dependencies (into `~/.konan`, about 2.5 GB). `kotlin-js-store/yarn.lock` pins the npm packages of the JS test runner: commit it when it changes (e.g. after a Kotlin upgrade; `./gradlew kotlinUpgradeYarnLock` rewrites it). The Wasm targets need `@OptIn(ExperimentalWasmDsl::class)` in `build.gradle.kts`, and Node prints a harmless `ExperimentalWarning` for WASI.
 
 `TestANSI` (commonTest) holds the unit tests. `src/jvmTest/kotlin/readme/ReadmeExamplesTest.kt` captures what each README example in `ReadmeImages.kt` prints and compares it with an expected string, written with `\e` for ESC in raw strings (`"""\e[1mx\e[0m"""`); captured output goes through the same `\e` replacement, so failures are readable. Every example except `palette` needs an entry (`everyExampleHasAnExpectedOutput`). The gradient's expected codes are computed by a separate linear interpolation in the test, not copied from the library.
 

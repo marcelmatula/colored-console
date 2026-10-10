@@ -19,7 +19,7 @@ A small Kotlin DSL for printing colored and styled text to the terminal using AN
 - Conditional and nested styling
 - Styling can be switched off with a single flag
 - Helpers to strip escape codes and measure the visible length of styled text
-- A single source file with no dependencies, usable in Kotlin Multiplatform common code
+- A single source file with no dependencies, in Kotlin Multiplatform common code: tested on the JVM, JavaScript (Node.js), WebAssembly and Kotlin/Native (Linux and Windows)
 
 ## Requirements
 
@@ -256,7 +256,7 @@ Build the project and run the tests with:
 ./gradlew check
 ```
 
-The build uses a Java 25 toolchain, which Gradle downloads if it is not installed.
+The build uses a Java 25 toolchain, which Gradle downloads if it is not installed. The first build also downloads Node.js, for the JavaScript and WebAssembly tests, and the Kotlin/Native compiler. Native tests run only on their own system: `linuxX64` on Linux and `mingwX64` on Windows. On macOS, the native targets are compiled but not tested.
 
 The images in this README are generated from the real output of the examples, and the tests compare that output with the expected escape codes. After changing an example (in this README and in [`ReadmeImages.kt`](src/jvmTest/kotlin/readme/ReadmeImages.kt)), update its expected output in [`ReadmeExamplesTest.kt`](src/jvmTest/kotlin/readme/ReadmeExamplesTest.kt) and regenerate the images with:
 

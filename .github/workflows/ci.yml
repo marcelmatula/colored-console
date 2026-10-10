@@ -14,7 +14,8 @@ concurrency:
 
 jobs:
   check:
-    # Windows builds and runs the tests; it cannot show whether a Windows terminal renders the colors.
+    # Both run the JVM, JS and Wasm tests, plus the native tests for their own OS: linuxX64 on Linux, mingwX64 on
+    # Windows. Windows cannot show whether a Windows terminal renders the colors.
     strategy:
       fail-fast: false
       matrix:
