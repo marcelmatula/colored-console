@@ -34,8 +34,9 @@ kotlin {
     }
 }
 
-// kotlinWasmStoreYarnLock takes build/wasm/yarn.lock as input, but the Wasm tests have no npm dependencies, and yarn on
-// Windows then writes no lock file, so Gradle fails the task on the missing input. With nothing to store, skip it.
+// kotlinWasmStoreYarnLock takes build/wasm/yarn.lock as input. The Wasm tests have no npm dependencies, and yarn then does
+// not always write that file (one Windows CI run had none), so Gradle failed the task on the missing input. With nothing
+// to store, skip it.
 tasks.withType<YarnLockStoreTask>().configureEach {
     if (name == "kotlinWasmStoreYarnLock") {
         val lock = inputFile
