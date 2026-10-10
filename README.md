@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/marcelmatula/colored-console/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/marcelmatula/colored-console/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/marcelmatula/colored-console)](https://github.com/marcelmatula/colored-console/releases/latest)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.marcelmatula/colored-console)](https://central.sonatype.com/artifact/io.github.marcelmatula/colored-console)
 [![Kotlin](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmarcelmatula%2Fcolored-console%2Fmaster%2Fgradle%2Flibs.versions.toml&query=%24.versions.kotlin&label=Kotlin&logo=kotlin&color=7F52FF)](gradle/libs.versions.toml)
 [![License: MIT](https://img.shields.io/github/license/marcelmatula/colored-console)](LICENSE)
 
@@ -19,7 +20,8 @@ A small Kotlin DSL for printing colored and styled text to the terminal using AN
 - Conditional and nested styling
 - Styling can be switched off with a single flag
 - Helpers to strip escape codes and measure the visible length of styled text
-- A single source file with no dependencies, in Kotlin Multiplatform common code: tested on the JVM, JavaScript (Node.js), WebAssembly and Kotlin/Native (Linux and Windows)
+- Kotlin Multiplatform: tested on the JVM, JavaScript (Node.js), WebAssembly and Kotlin/Native (Linux and Windows)
+- Available on Maven Central, or as a single source file with no dependencies to copy into your project
 
 ## Requirements
 
@@ -27,9 +29,35 @@ The output relies on ANSI escape codes, so it needs a terminal that supports the
 
 ## Installation
 
-The library is a single file. Copy [`ColoredConsole.kt`](src/commonMain/kotlin/com/github/mm/coloredconsole/ColoredConsole.kt) into your project. Keep the license notice at the top of the file; the MIT License requires it in every copy.
+The library is on Maven Central. With Gradle, add the dependency to `build.gradle.kts`:
 
-When you use it from another package, import the functions you need:
+```kotlin
+dependencies {
+    implementation("io.github.marcelmatula:colored-console:1.4.0")
+}
+```
+
+In a Kotlin Multiplatform project, add it to `commonMain.dependencies { }`. It is published for the JVM, JavaScript, WebAssembly (`wasmJs`, `wasmWasi`) and Kotlin/Native (`linuxX64`, `mingwX64`).
+
+With Maven, add the JVM artifact, `colored-console-jvm`, to `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>io.github.marcelmatula</groupId>
+    <artifactId>colored-console-jvm</artifactId>
+    <version>1.4.0</version>
+</dependency>
+```
+
+The JVM library runs on Java 8 or later. Your project needs Kotlin 2.3 or later on the JVM, and Kotlin 2.4 or later on the other platforms.
+
+### Copying the file
+
+The library is also a single file, which works with older Kotlin versions and on platforms the dependency doesn't cover. Copy [`ColoredConsole.kt`](src/commonMain/kotlin/com/github/mm/coloredconsole/ColoredConsole.kt) into your project. Keep the license notice at the top of the file; the MIT License requires it in every copy.
+
+### Imports
+
+Import the functions you need. With a copied file, this is only needed in other packages:
 
 ```kotlin
 import com.github.mm.coloredconsole.ColoredConsole
